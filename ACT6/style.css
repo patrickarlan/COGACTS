@@ -1,3 +1,78 @@
+/* Remove white space below footer for desktop */
+@media (min-width: 992px) {
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .footer {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  main, .dashboard-section {
+    flex: 1 0 auto;
+  }
+}
+/* LOGIN FORM ERROR STYLES (match register) */
+.login-control.error {
+  border: 2px solid #dc3545 !important;
+  background: #fff6f6 !important;
+}
+.login-control.error + .error-tooltip {
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.login-control.error:focus + .error-tooltip,
+.login-control.error:hover + .error-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 992px) {
+  .login-panel {
+    padding: 2rem 1.5rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .container-login {
+    padding: 2rem 0.5rem;
+  }
+  .login-control {
+    font-size: 1.1rem;
+    padding: 1rem 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-panel {
+    padding: 1rem 0.5rem;
+    width: 100%;
+    min-width: 0;
+    border-radius: 10px;
+  }
+  .container-login {
+    padding: 0.5rem;
+  }
+  .login-control {
+    font-size: 1rem;
+    padding: 0.75rem 0.75rem;
+  }
+  .btn {
+    font-size: 1rem;
+    padding: 0.75rem 0;
+  }
+  .error-tooltip {
+    font-size: 0.9rem;
+    min-width: 140px;
+    max-width: 90vw;
+    padding: 0.4rem 0.7rem 0.4rem 1.2rem;
+    left: 0;
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -711,7 +786,6 @@ hr {
 .product-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 25px rgba(56, 56, 56, 0.3) !important;
-  z-index: 10;
 }
 
 
@@ -784,6 +858,13 @@ hr {
   }
 }
 
+  .login-panel {
+     background: #fff;
+     border-radius: 12px;
+     box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+     border: 1px solid #e0e0e0;
+     padding: 2rem;
+  }
 /* Product overview panel styling */
 .product-panel {
   background: #fff;
@@ -872,3 +953,327 @@ hr {
 .specification .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9; /* subtle stripe color */
 }
+
+/* Login Panel Styles */
+.container-login {
+    padding: 10rem;
+    background-color: #ffffff !important;
+    border-radius: 12px;
+}
+
+.login-panel {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    border: 1px solid #e0e0e0;
+    padding: 4rem 7rem;
+    max-width: 900px;
+}
+
+.login-panel h3 {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.login-panel .form-control {
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.25rem 1.5rem;
+    font-size: 1.25rem;
+    text-align: left;
+}
+
+.login-panel .form-control::placeholder {
+    text-align: left;
+    color: #aaa;
+}
+
+.login-panel .btn-primary {
+    background: linear-gradient(90deg, #007bff 60%, #0056b3 100%);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 1rem 0;
+    font-size: 1.25rem;
+    width: 100%;
+    transition: background 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.login-panel .btn-primary:hover {
+    background: linear-gradient(90deg, #0056b3 0%, #007bff 100%);
+    box-shadow: 0 4px 16px rgba(0,123,255,0.15);
+    transform: translateY(-2px) scale(1.03);
+}
+.form-check-input.error {
+  border: 2px solid #dc3545 !important;
+  box-shadow: 0 0 0 2px #dc3545 !important;
+}
+.form-check-input.error + .error-tooltip {
+  display: none;
+}
+.form-check-input.error:focus + .error-tooltip,
+.form-check-input.error:hover + .error-tooltip {
+  display: flex;
+}
+
+/* REGISTER FORM AND ERROR TOOLTIP STYLES */
+.error-tooltip {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), visibility 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.register-control.error:focus + .error-tooltip,
+.register-control.error:hover + .error-tooltip,
+.form-check-input.error:focus + .error-tooltip,
+.form-check-input.error:hover + .error-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+.form-check-input.error + .error-tooltip {
+  display: none;
+  position: absolute;
+  left: 2.2rem;
+  top: -2.6rem;
+  min-width: 220px;
+  max-width: 350px;
+  pointer-events: none;
+  background: #fff8e1;
+  color: #333;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  font-size: 0.98rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.form-check-input.error + .error-tooltip .error-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff9800;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+.form-check-input.error + .error-tooltip {
+  display: none;
+  position: absolute;
+  left: 2.2rem;
+  top: -2.6rem;
+  min-width: 220px;
+  max-width: 350px;
+  pointer-events: none;
+  background: #fff8e1;
+  color: #333;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  font-size: 0.98rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+.form-check-input.error:focus + .error-tooltip,
+.form-check-input.error:hover + .error-tooltip {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+.register-control.error {
+  border: 2px solid #dc3545 !important;
+  background: #fff6f6 !important;
+}
+.error-tooltip {
+  display: none;
+}
+/* Hide tooltip by default, fade in on hover/focus for text fields */
+.register-control.error + .error-tooltip {
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.register-control.error:focus + .error-tooltip,
+.register-control.error:hover + .error-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+/* Floating error tooltip styles */
+.error-tooltip {
+  position: absolute;
+  left: 0;
+  right: auto;
+  top: -2.6rem;
+  min-width: 220px;
+  max-width: 350px;
+  pointer-events: none;
+  background: #fff8e1;
+  color: #333;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  font-size: 0.98rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+.form-check .error-tooltip {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  min-width: 0;
+  max-width: 100%;
+  box-shadow: none;
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+}
+.error-tooltip .error-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff9800;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+.form-check .error-tooltip .error-icon {
+  position: static;
+  margin-right: 0.5rem;
+  transform: none;
+}
+.error-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 2rem;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fff8e1;
+}
+.form-check .error-tooltip::after {
+  display: none;
+}
+.position-relative.has-error .register-control {
+  margin-bottom: 1.5rem;
+}
+.form-check .error-message {
+  position: static;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #dc3545;
+}
+/* Error message positioning for register fields */
+.position-relative .error-message {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  z-index: 2;
+  font-size: 0.95rem;
+  padding-left: 0.25rem;
+}
+/* Register Panel Styles */
+.register-panel {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  border: 1px solid #e0e0e0;
+  padding: 4rem 5rem;
+  width: 550px;
+  max-width: 100%;
+  min-width: 400px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+@media (max-width: 992px) {
+  .register-panel {
+    padding: 2rem 1.5rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .container-login {
+    padding: 2rem 0.5rem;
+  }
+  .register-control {
+    font-size: 1.1rem;
+    padding: 1rem 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .register-panel {
+    padding: 1rem 0.5rem;
+    width: 100%;
+    min-width: 0;
+    border-radius: 10px;
+  }
+  .container-login {
+    padding: 0.5rem;
+  }
+  .register-control {
+    font-size: 1rem;
+    padding: 0.75rem 0.75rem;
+  }
+  .register-btn {
+    font-size: 1rem;
+    padding: 0.75rem 0;
+  }
+  .error-tooltip {
+    font-size: 0.9rem;
+    min-width: 140px;
+    max-width: 90vw;
+    padding: 0.4rem 0.7rem 0.4rem 1.2rem;
+    left: 0;
+  }
+}
+.register-panel h3 {
+  color: #28a745;
+  font-weight: 600;
+}
+.register-control {
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem 1.5rem;
+  font-size: 1.25rem;
+  text-align: left;
+}
+.register-control::placeholder {
+  text-align: left;
+  color: #aaa;
+}
+.register-btn {
+  padding: 1rem 0;
+  font-size: 1.25rem;
+  width: 100%;
+  transition: background 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.register-btn.btn-primary {
+  background: linear-gradient(90deg, #28a745 60%, #218838 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.register-btn.btn-primary:hover {
+  background: linear-gradient(90deg, #218838 0%, #28a745 100%);
+  box-shadow: 0 4px 16px rgba(40,167,69,0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+
+
+
+ 

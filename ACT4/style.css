@@ -1,0 +1,604 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+}
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%; /* allow content to expand beyond viewport */
+  overflow-x: hidden;
+}
+
+
+/* Ensure no unintentional bottom gaps */
+body::after {
+  content: "";
+  display: block;
+  height: 0;
+  margin-bottom: 0;
+}
+
+/* Optional: if your last section has extra padding */
+section:last-of-type {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/*Navbar brand hover-------------------------------------------------------------------*/
+.navbar .navbar-brand.nav-hover:hover {
+    color: #dc3545 !important; /* Dahua red */
+    transition: color 0.3s ease;
+}
+
+/* Optional: if you want the background effect like nav links */
+.navbar .navbar-brand.nav-hover:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+}
+
+
+/* Navigation Bar Customization */
+
+.navbar {
+    padding: 1.5rem 3rem;
+}
+
+.navbar .container-fluid {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.custom-nav .nav-link {
+  margin: 0 20px;
+}
+
+.nav-hover {
+    position: relative;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-hover:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;;
+    font-weight: 400;
+}
+.nav-hover {
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+/* Hover style for links inside navbar */
+.navbar .nav-link.nav-hover:hover {
+    color: #ff0019 !important;  /* Dahua red */
+}
+
+
+
+/*Hover panel-------------------------------------------------------------------------------*/
+
+.hover-panel-parent {
+  position: relative;
+}
+
+.hover-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 250px; /* ✅ increase this value to fit your text */
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition: all 0.25s ease;
+  background-color: #212529;
+  border-radius: 0 0 8px 8px;
+  z-index: 1000;
+}
+
+/* Show panel on hover */
+.hover-panel-parent:hover .hover-panel {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Item styles */
+.hover-panel .dropdown-item {
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.hover-panel .dropdown-item:hover {
+  background-color: rgba(175, 173, 173, 0.24);
+  color: #dc3545 !important; /* Dahua red on hover */
+}
+
+/* Maintain navbar layout */
+.navbar-nav .hover-panel-parent {
+  position: relative;
+}
+
+
+
+
+/* --- Search Panel-------------------------------------------------------------------------*/
+.search-container {
+  position: relative;
+}
+
+.search-panel {
+  display: none;
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 250px;
+  background-color: #212529;
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+/* Position the search panel right below the icon */
+.search-container {
+  position: relative;
+}
+
+.search-panel {
+  display: none; /* hidden by default */
+  position: absolute;
+  top: 100%; /* appear below the icon */
+  right: 0;
+  width: 250px;
+  z-index: 1050; /* keep above navbar */
+  transition: all 0.3s ease;
+}
+
+/* When hovering over icon or panel, show it */
+.search-container:hover .search-panel {
+  display: block;
+}
+
+/* Make placeholder text more visible */
+.search-panel input::placeholder {
+  color: #f8f9fa; /* lighter white */
+  opacity: 0.9;   /* make it more solid */
+}
+
+/* Optional: make input clearer */
+.search-panel input {
+  background-color: #343a40 !important; /* darker bg for contrast */
+  color: #fff !important;
+  border: none;
+  outline: none;
+}
+
+/* Optional: subtle shadow effect */
+.search-panel {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+/* --- Profile Panel------------------------------------------------------------------------*/
+.profile-container {
+  position: relative;
+}
+
+.profile-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 180px;
+  background-color: #212529;
+  border-radius: 8px;
+  z-index: 1000;
+  transition: all 1s ease;
+}
+
+.profile-container:hover .profile-panel {
+  display: block;
+}
+
+.profile-panel .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+/* Banner Section--------------------------------------------------------------------------*/
+.banner {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  background-color: #ffffff; /* same as bg-light for backup */
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overview Section------------------------------------------------------------------------*/
+.overview {
+  background-color: #f8f9fa; /* light gray to separate it from white body */
+  color: #333; /* default text color */
+}
+
+/* Inside the white panel */
+.overview .col-md-20 {
+  background-color: #ffffff;
+  border-left: 6px solid #dc3545; /* Dahua red accent */
+}
+
+/* Heading Style */
+.overview h2 {
+  font-weight: 600;
+  color: #424242; /* Dahua red */
+  letter-spacing: 1px;
+}
+
+/* Paragraph Styles */
+.overview p {
+  font-size: 1.5rem;
+  color: #555; /* softer gray for text */
+  line-height: 1.6;
+}
+
+/* Lead paragraph slightly darker */
+.overview .lead {
+  color: #333;
+}
+
+.overview .col-md-8 {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.overview .col-md-8:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.custom-text {
+  font-size: 1.3rem;        
+  font-weight: 500;          
+  color: #000000;           
+  font-family: 'Arial', sans-serif;  
+  line-height: 1.5;          
+}
+
+
+/* About US Section Text=======================================================================*/
+.about-text {
+  font-size: 1.3rem;
+  line-height: 1.4;
+  color: #555; /* optional softer gray */
+}
+
+.about-text-black {
+  color: #000000;
+  font-weight: 500; /* slightly bold */
+}
+
+.about-text-dark {
+  color: #686767;
+  font-weight: 300; /* slightly bold */
+}
+
+/* Contact Image Panel--------------------------------------------------------------------------*/
+.contact-banner {
+  background-color: #f8f9fa; /* same as body bg-light */
+  padding: 2rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.contact-text {
+  color: rgb(75, 75, 75) !important;
+}
+
+.cont-info {
+  color: #555; /* softer gray for text */
+  font-size: 0.9rem !important;
+  line-height: 1.5;
+  font-size: 500;
+}
+
+.contact-image-container {
+  overflow: hidden;
+  border-radius: 1rem;
+  transition: transform 0.4s ease;
+}
+
+.contact-image-container:hover img {
+  transform: scale(1.05);
+}
+
+/* Contact Card */
+.contact-card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: none;
+}
+
+.contact-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); /* stronger shadow pop */
+}
+
+/* Contact Panel (remove hover background change) */
+.contact-panel {
+  border-top: 2px solid #dee2e6;
+  background-color: #f8f9fa; /* stays static */
+  transition: none;
+}
+
+
+
+
+/* Product Carousel Section----------------------------------------------------------------*/
+.product-carousel {
+  background: none;
+  padding-top: 2rem;
+  border-top: 2px solid #dee2e6;
+}
+
+.product-carousel h2 {
+  color: #212529;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+}
+
+/* Product Card Styling */
+.product-carousel .card {
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-carousel .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Image and Overlay */
+.image-container {
+  position: relative;
+  overflow: hidden;
+  border: 3px solid #dee2e6; /* Add border */
+  border-radius: 20px 20px 0 0; /* Round only top corners */
+}
+
+.card-img-top {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.image-container:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Hover overlay---------------------------------------------------------------------------*/
+.overlay {
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  transition: bottom 0.4s ease;
+  opacity: 0;
+}
+
+.image-container:hover .overlay {
+  bottom: 0;
+  opacity: 1;
+}
+
+/* Button inside overlay */
+.overlay button {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+}
+
+.image-container:hover .overlay button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card Body */
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  margin-bottom: 0.5rem;
+}
+
+/* Carousel Controls */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1);
+}
+
+.carousel-control-prev-icon.bg-dark,
+.carousel-control-next-icon.bg-dark {
+  background-color: #212529 !important;
+}
+
+/* Footer Styling--------------------------------------------------------------------------*/
+.footer {
+  background-color: #212529;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+/* Footer Titles */
+.footer-title {
+  border-bottom: 2px solid #dc3545; /* Dahua red underline */
+  display: inline-block;
+  padding-bottom: 4px;
+  margin-bottom: 1rem;
+}
+
+/* Footer Titles */
+.footer-title {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.footer-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background-color: #dc3545; /* Dahua red underline */
+}
+
+/* Footer Links */
+.footer-link {
+  color: #bbb;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Footer Brand */
+.footer-brand {
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #dc3545;
+  display: inline-block;
+  padding-bottom: 3px;
+}
+
+/* Social Media Icons */
+.social-link {
+  font-size: 1.3rem;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-link:hover {
+  color: #dc3545;
+  transform: translateY(-3px);
+}
+
+/* Scroll-to-top button---------------------------------------------------------------------*/
+.scroll-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) scale(0.9);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background-color: #212529; /* dark color */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+
+  /* start hidden (invisible + non-interactive) */
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+/* visible state */
+.scroll-btn.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto; /* allow clicks */
+}
+
+/* hover style */
+.scroll-btn:hover {
+  background-color: #dc3545; /* Dahua red on hover */
+  transform: translateY(-3px) scale(1.02);
+}
+
+
+/* --- Product Section Styling ---------------------------------------------------------------*/
+.product-card {
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Equal-sized image container */
+.card-img-wrapper {
+  width: 100%;
+  height: 250px; /* fixed box height */
+  overflow: hidden;
+}
+
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* keeps proportion while filling box */
+  transition: transform 0.4s ease;
+}
+
+/* Hover effect for card and image */
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Consistent text spacing */
+.product-card .card-body {
+  min-height: 160px;
+}
+
+.product-card .btn {
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.product-card .btn:hover {
+  background-color: #dc3545; /* Dahua red */
+  border-color: #dc3545;
+}
+
+/* Responsive tweak for small screens */
+@media (max-width: 768px) {
+  .card-img-wrapper {
+    height: 200px;
+  }
+}
+
+

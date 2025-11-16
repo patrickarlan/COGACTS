@@ -1,0 +1,404 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*fonts*/
+
+@font-face {
+    font-family: "CY-Grostek-Wide";
+    src: url(FONTS/cy-grotesk-wide.ttf);
+}
+
+@font-face {
+    font-family: "CY-Grostek-Bold";
+    src: url(FONTS/neutral-grotesk-bold.ttf);
+}
+
+@font-face {
+    font-family: "CY-Grostek-Reg";
+    src: url(FONTS/neutral-grotesk-regular.ttf);
+}
+
+/*BODY FOR EACH HTML*/
+
+body#home{
+    margin: 0;
+    font-family: "CY-Grostek-Wide";
+    background-color: black;
+    background-image: url("PICSCOG/ttBACK.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+body#about{
+    margin: 0;
+    font-family: "CY-Grostek-Wide";
+    background-color: black;
+    background-image: url("PICSCOG/ttABOUTB.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+body#contact{
+    margin: 0;
+    font-family: "CY-Grostek-Wide";
+    background-color: black;
+    background-image: url("PICSCOG/ttCONT.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+body#sign{
+    margin: 0;
+    font-family: "CY-Grostek-Wide";
+    background-color: black;
+    background-image: url("PICSCOG/ttSIGN.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+/*MAIN*/
+
+header {
+    background-color: #5526069c;
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    color: #ffffff;
+    padding: 50px 45px;
+}
+nav {
+    position: absolute;
+    right: 10%;
+    top: 38%;
+}
+
+nav a {
+    color: white;
+    margin: 0 40px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: orangered
+}
+
+
+logoHEADER {
+    position: absolute;
+    right: 87%;
+    top: 5px;
+}
+
+main {
+    padding: 20px;
+    text-align: center;
+}
+
+footer {
+    background-color: #5526069c;
+    color: white;
+    backdrop-filter: blur(10px);
+    padding: 15px 40px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Arial", sans-serif;
+}
+
+.footer-left h3 {
+    margin: 0;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.footer-center a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.footer-center a:hover {
+    color: #ffd700;
+}
+
+.footer-right a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.footer-right a:hover {
+    color: #ffd700;
+}
+
+/*flexbox for footer*/
+.footer-left {flex: 1; text-align: left;}
+.footer-center {flex: 1; text-align: center;}
+.footer-right {flex: 1; text-align: right;}
+.footer-center a, .footer-right a {margin: 0 10px; color: white; text-emphasis: none;} 
+.footer-right a i {font-size: 18px;}
+
+/*ABOUT US*/
+
+#arrowabout {
+    position: absolute; /* lets you move it freely */
+    top: 190px;   /* distance from top */
+    left: 270px; /* distance from right */
+}
+
+
+#H1about{
+    font-family: "CY-Grostek-Wide";
+    font-size: 140px;
+    text-align: left;
+    margin: 0;
+    position: absolute;
+    top: 60%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+
+#H1Aabout {
+    font-family: "CY-Grostek-Wide";
+    font-size: 7;
+    text-align: left;
+    position: absolute;
+    top: 654px;
+    left: 380px;
+}
+
+#transback {
+    background-color: rgba(94, 60, 33, 0.315); 
+    backdrop-filter: blur(10px);
+    border: 1px solid gray;
+    padding: 5px 30px;     /* smaller padding (20px top/bottom, 30px left/right) */
+    border-radius: 7px;     /* rounded corners */
+    max-width: 500px; 
+    position: absolute;     /* keeps box in place */
+    top: 140px;
+    left: 1000px;
+}
+
+
+#aboutinfo {
+    color: white;
+    font-family: "CY-Grostek-Reg";
+    font-weight: 600;
+    font-size: 27px;
+    text-align: justify;      /* align both left & right edges */
+    margin: 0;                /* remove extra spacing */
+    position: relative;       /* relative, so it stays inside */
+}
+
+#aboutinfo p:nth-of-type(2) {
+    font-style: italic;
+    color: #ffc267;
+    font-size: 25px;
+}
+
+
+/*HOMEPAGE*/
+
+h1 {
+    font-family: "CY-Grostek-Wide";
+    font-size: 140px;
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    top: 45%;
+    left: 43%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+h2 {
+    font-family: "CY-Grostek-Wide";
+    font-size: 40px;
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    top: 55%;
+    left: 43%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+
+#learn-btn a {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #ff5d40;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: 0.3s ease;
+    margin: 0 11px;
+}
+
+#learn-btn {
+    position: absolute;
+    top: 570px;
+    left: 780px;
+    transform: translate(-50%, -50%);
+    text-align: center;   
+}
+
+#learn-btn a:hover {
+    background-color: white;
+    color: #333;
+}
+
+
+/*CONTACT US*/
+
+#H1contact {
+    font-family: "CY-Grostek-Wide";
+    font-size: 80px;
+    text-align: center;
+    white-space: nowrap;   /* keeps "CONTACT US" on one line */
+    margin: 0;
+    position: absolute;
+    top: 25%;
+    left: 63%;             /* centers horizontally */
+    transform: translate(-50%, -50%);
+    color: white;
+    
+}
+
+#H2contact {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 35px;
+    font-weight: 5;
+    position: absolute;
+    text-align: left;
+    top: 285px;
+    left: 1073px;
+}
+
+#contactinfo p {
+    margin: 100px 0;   /* top & bottom margin of 20px */
+}
+
+#contactinfo {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 25px;         /* fixed font size */
+    color: white;
+    position: absolute;      /* correct spelling */
+    top: 250px;              /* place it below the H2 */
+    left: 950px;            /* aligned with H2 */
+    line-height: 1.5;        /* adds spacing between lines */
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-style: italic;
+}
+
+#logophone {
+    position: absolute;
+    top: 365px;
+    right: 950px;
+}
+
+#logomail {
+    position: absolute;
+    top: 540px;
+    right: 950px;
+}
+
+#logoadd {
+    position: absolute;
+    top: 712px;
+    right: 950px;
+}
+
+/*SIGN IN*/
+
+/* Center the box */
+#signback {
+  background-color: rgba(255, 255, 255, 0.836);
+  backdrop-filter: blur(10px);
+  border: 3px solid rgb(253, 253, 253);
+  padding: 100px 20px;         /* Adjusted padding */
+  border-radius: 7px;
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  /* This centers it */
+  text-align: center;
+}
+
+/* Heading */
+#signback h2 {
+    font-family: "CY-Grostek-Wide";
+    margin-bottom: 5px;
+    color: black;
+    top: 70px;
+    left: 219px;
+    text-align: center;
+}
+
+#signback h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+    color: rgb(28, 203, 247);
+    top: 60px;
+    left: 219px;
+    text-align: center;
+}
+
+/* Inputs */
+#signback input {
+  display: block;
+  width: 95%;          /* make input stretch within panel */
+  padding: 10px;        /* uniform padding */
+  margin: 15px 0;
+  border: 2px solid #000;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: left;     /* ensure text + placeholder align left */
+}
+
+#signback input::placeholder {
+  text-align: left;     /* force placeholder to the left */
+}
+
+
+/* Button */
+#signback button {
+  padding: 12px 100px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#signback button:hover {
+  background-color: #444;
+}

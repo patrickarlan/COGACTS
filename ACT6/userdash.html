@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: ABOUT US</title>
+    <title>DAHUA: DASHBOARD</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
@@ -11,9 +11,58 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+    <style>
+      .welcome-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(8px);
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s cubic-bezier(.4,0,.2,1);
+      }
+      .welcome-overlay.show {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .welcome-overlay.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .welcome-modal {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        padding: 2.5rem 2rem 2rem 2rem;
+        min-width: 320px;
+        max-width: 90vw;
+        text-align: center;
+        animation: popIn 0.5s cubic-bezier(.4,0,.2,1);
+      }
+      @keyframes popIn {
+        0% { transform: scale(0.7); opacity: 0; }
+        60% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    </style>
 
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+<!-- Welcome Popout Modal -->
+<div id="welcomeOverlay" class="welcome-overlay">
+  <div class="welcome-modal">
+    <h4 class="mb-3">Welcome to your Dashboard!</h4>
+    <p class="mb-4">We're glad to have you here. Explore your favourites and orders below.</p>
+    <button id="thankYouBtn" class="btn btn-success px-4">Thank You</button>
+  </div>
+</div>
 <!-- Header/Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
@@ -22,6 +71,7 @@
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
+
 
     <!-- Navbar Toggler (for mobile) -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -40,9 +90,9 @@
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
             <ul class="list-unstyled m-0">
-              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
-              <li><a href="attendance2.html" class="dropdown-item text-white py-2 px-3">ASA1222E-S</a></li>
-              <li><a href="attendance3.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
+              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">Attendance Monitoring</a></li>
+              <li><a href="accessdevice.html" class="dropdown-item text-white py-2 px-3">CCTV</a></li>
+              <li><a href="accessdevice.html" class="dropdown-item text-white py-2 px-3">Access Control</a></li>
             </ul>
           </div>
         </li>
@@ -89,7 +139,7 @@
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="logsign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <a href="sign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
           </div>
         </div>
       </div>
@@ -100,102 +150,70 @@
 
 
 <!-- Second Header / Banner -->
+<main style="flex: 1 0 auto;">
 <div class="container-fluid p-0 bg-dark">
   <div class="banner">
-    <img src="PICS/DAHUAaboutus.png" alt="Banner Image" class="img-fluid">
+    <img src="PICS/DAHUAcontact.png" alt="Banner Image" class="img-fluid">
   </div>
 </div>
 
-<!-- About Section -->
-<section class="overview py-5 bg-light">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-10 bg-white shadow rounded-4 p-5">
-
-        <!-- Main Header -->
-        <h2 class="fw-bold text-center text-uppercase mb-4">About Dahua Technology</h2>
-        <hr class="mx-auto mb-4" style="width: 80%; height: 3px; background-color: #d32f2f; border: none;">
-
-        <!-- Overview Paragraph -->
-        <p class="about-text about-text-black mb-4 text-justify">
-          Zhejiang Dahua Technology Co., Ltd., widely known as Dahua Technology, is a global leader in video-centric AIoT solutions and services. 
-          Since launching its <em>‘Dahua Think’</em> corporate strategy in 2021, the company has focused on two key areas: City and Enterprise. 
-          Through AIoT and IoT digital intelligence platforms, Dahua drives the digital transformation of cities and enterprises, creating value across multiple industries.
-        </p>
-
-        <!-- Image Panel -->
-        <div class="text-center my-4">
-          <img src="PICS/DAHUAabover.jpg" alt="About Dahua Technology" class="img-fluid rounded-3 shadow">
-          <p class="text-secondary mt-2 small">Dahua Technology Headquarters, Hangzhou, China</p>
+<!--START HERE-->
+<section class="dashboard-section py-1 m0 bg-light">
+  <div class="dashboard-section container my-3 bg-light">
+    <div class="row justify-content-center align-items-start">
+      <!-- Profile Panel -->
+      <div class="col-md-3 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Profile</h5>
+          </div>
+          <div class="card-body text-center">
+            <img src="PICS/DAHUAfavi.png" alt="Profile" class="rounded-circle mb-3" style="width:80px;height:80px;object-fit:cover;">
+            <h6 class="mb-1">User Name</h6>
+            <p class="text-muted mb-2">user@email.com</p>
+            <a href="#" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+          </div>
         </div>
-
-        <!-- Company Profiling -->
-        <div class="company-profile text-center mb-4 py-2 pt-4">
-          <h3 class="fw-bold text-uppercase text-dark mb-3">Company Profiling</h3>
-          <h4 class="fw-bold text-danger mb-4">Dahua Technology</h4>
+      </div>
+      <!-- Favourite Panel -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Favourite Panel</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted">Your favourite products will appear here.</p>
+            <ul class="list-group list-group-flush" id="favourite-list">
+              <li class="list-group-item">No favourites yet.</li>
+            </ul>
+          </div>
         </div>
-
-        <div class="text-start mt-2 mx-auto" style="max-width: 750px; font-size: 1.1rem; line-height: 1.7;">
-          <p><strong>Company Name:</strong> Zhejiang Dahua Technology Co., Ltd.</p>
-          <p><strong>Founded:</strong> 2001</p>
-          <p><strong>Founder:</strong> Fu Liquan</p>
-          <p><strong>Headquarters:</strong> Hangzhou, Zhejiang, China</p>
-          <p><strong>Type:</strong> Public Company</p>
-
-          <h5 class="fw-bold mt-4 mb-3 text-dark border-start border-3 border-danger ps-3">Company Overview</h5>
-          <p>
-            Dahua Technology is one of the world’s leading providers of video surveillance products and solutions. 
-            The company focuses on video-centric AIoT (Artificial Intelligence of Things), offering innovative technologies 
-            for security monitoring, smart cities, and business intelligence.
-          </p>
-          <p>
-            Through continuous innovation, advanced R&D, and reliable products, Dahua contributes to creating safer, smarter, 
-            and more connected communities worldwide.
-          </p>
-
-          <h5 class="fw-bold mt-4 mb-3 text-dark border-start border-3 border-danger ps-3">Products and Services</h5>
-          <ul class="about-text text-muted fw-bold">
-            <li>CCTV Cameras and Recorders (DVR/NVR)</li>
-            <li>Access Control and Attendance Devices</li>
-            <li>Smart City and Traffic Solutions</li>
-            <li>AI and Cloud-Based Security Systems</li>
-            <li>Video Management Software</li>
-          </ul>
-
-          <h5 class="fw-bold mt-5 mb-3 text-dark border-start border-3 border-danger ps-3">Company Highlights (2021)</h5>
-          <ul class="about-text text-success fw-bold">
-            <li>Total operating revenue: RMB 32.835 billion (USD 4.98 billion), a year-on-year increase of 24.07%</li>
-            <li>Net profit after non-recurring gains/losses: RMB 3.103 billion (USD 470 million), up 13.47% YOY</li>
-            <li>Over 22,000 employees, with more than 50% engaged in R&D</li>
-            <li>Annual R&D investment: approximately 10% of sales revenue</li>
-            <li>Established specialized research institutes including:
-              <ul>
-                <li>Advanced Technology Institute</li>
-                <li>Big Data Institute</li>
-                <li>Central Research Institute</li>
-                <li>Cybersecurity Institute</li>
-                <li>Smart City Institute</li>
-              </ul>
-            </li>
-            <li>Expanding into new sectors such as machine vision, robotics, video collaboration, automotive electronics, and smart thermal imaging</li>
-          </ul>
-
-          <p class="about-text about-text-black mt-4">
-            Committed to the mission of <strong>“Enabling a safer society and smarter living”</strong>,
-            Dahua Technology stays true to its core value of being <strong>customer-centered</strong>. 
-            The company continuously strives to deliver reliable, intelligent, and innovative solutions for a more secure and connected world.
-          </p>
+      </div>
+      <!-- Order Panel -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Order Panel</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted">Your recent orders will appear here.</p>
+            <ul class="list-group list-group-flush" id="order-list">
+              <li class="list-group-item">No orders yet.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+</main>
+
 
 
 
 <!-- Footer -->
  <!-- Footer Section -->
-<footer class="footer bg-dark text-white py-5">
+<footer class="footer bg-dark text-white py-5" style="flex-shrink: 0;">
 
   <!-- Top Columns: Centered -->
   <div class="container mb-4">
@@ -206,7 +224,7 @@
         <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
         <ul class="list-unstyled">
           <li><a href="products.html" class="footer-link">Attendance Device</a></li>
-          <li><a href="cctvdevice.html" class="footer-link">CCTV Device</a></li>
+          <li><a href="cctv.html" class="footer-link">CCTV Device</a></li>
           <li><a href="accessdevice.html" class="footer-link">Access Panel</a></li>
         </ul>
       </div>
@@ -264,6 +282,24 @@
 <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
 crossorigin="anonymous"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const overlay = document.getElementById('welcomeOverlay');
+  const btn = document.getElementById('thankYouBtn');
+  setTimeout(() => {
+    overlay.classList.add('show');
+  }, 300);
+  btn.addEventListener('click', function () {
+    overlay.classList.remove('show');
+    overlay.classList.add('hide');
+    setTimeout(() => {
+      overlay.classList.remove('hide');
+      overlay.style.display = 'none';
+    }, 400);
+  });
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

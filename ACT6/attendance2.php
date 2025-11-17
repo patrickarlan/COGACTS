@@ -18,7 +18,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -89,7 +89,7 @@
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="sign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
           </div>
         </div>
       </div>

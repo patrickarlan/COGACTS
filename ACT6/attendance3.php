@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: ABOUT US</title>
+    <title>DAHUA: CONTACTS</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
@@ -18,7 +18,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -40,7 +40,7 @@
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
             <ul class="list-unstyled m-0">
-              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
+              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222G</a></li>
               <li><a href="attendance2.html" class="dropdown-item text-white py-2 px-3">ASA1222E-S</a></li>
               <li><a href="attendance3.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
             </ul>
@@ -89,7 +89,7 @@
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="logsign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
           </div>
         </div>
       </div>
@@ -99,97 +99,98 @@
 </nav>
 
 
-<!-- Second Header / Banner -->
-<div class="container-fluid p-0 bg-dark">
-  <div class="banner">
-    <img src="PICS/DAHUAaboutus.png" alt="Banner Image" class="img-fluid">
-  </div>
-</div>
-
-<!-- About Section -->
-<section class="overview py-5 bg-light">
+<!-- Product 1: ASA1222G Overview -->
+<section class="product-overview py-5 bg-light">
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-10 bg-white shadow rounded-4 p-5">
+    <div class="product-panel mx-auto p-5 text-center shadow-lg rounded-4 bg-white" style="max-width: 850px;">
+      <h2 class="fw-bold mb-4">ASA1222E Time Attendance Terminal</h2>
+      <p class="text-secondary mb-5">
+        Explore the different angles of the Dahua ASA1222E device below.
+      </p>
 
-        <!-- Main Header -->
-        <h2 class="fw-bold text-center text-uppercase mb-4">About Dahua Technology</h2>
-        <hr class="mx-auto mb-4" style="width: 80%; height: 3px; background-color: #d32f2f; border: none;">
+      <!-- Carousel -->
+      <div class="container py-3">
+        <div class="mx-auto text-center" style="max-width:760px;">
+          
+          <!-- Main Carousel -->
+          <div id="asaCarousel" class="carousel slide mb-3" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner rounded overflow-hidden shadow-sm">
+              <div class="carousel-item active">
+                <img src="PICS/DAHUAattendance3.png" class="d-block w-100" alt="ASA1222G - back">
+              </div>
+            </div>
 
-        <!-- Overview Paragraph -->
-        <p class="about-text about-text-black mb-4 text-justify">
-          Zhejiang Dahua Technology Co., Ltd., widely known as Dahua Technology, is a global leader in video-centric AIoT solutions and services. 
-          Since launching its <em>‘Dahua Think’</em> corporate strategy in 2021, the company has focused on two key areas: City and Enterprise. 
-          Through AIoT and IoT digital intelligence platforms, Dahua drives the digital transformation of cities and enterprises, creating value across multiple industries.
-        </p>
+            <!-- Controls (inside image edges) -->
+            <!--<button class="carousel-control-prev" type="button" data-bs-target="#asaCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#asaCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>-->
+          </div>
 
-        <!-- Image Panel -->
-        <div class="text-center my-4">
-          <img src="PICS/DAHUAabover.jpg" alt="About Dahua Technology" class="img-fluid rounded-3 shadow">
-          <p class="text-secondary mt-2 small">Dahua Technology Headquarters, Hangzhou, China</p>
-        </div>
-
-        <!-- Company Profiling -->
-        <div class="company-profile text-center mb-4 py-2 pt-4">
-          <h3 class="fw-bold text-uppercase text-dark mb-3">Company Profiling</h3>
-          <h4 class="fw-bold text-danger mb-4">Dahua Technology</h4>
-        </div>
-
-        <div class="text-start mt-2 mx-auto" style="max-width: 750px; font-size: 1.1rem; line-height: 1.7;">
-          <p><strong>Company Name:</strong> Zhejiang Dahua Technology Co., Ltd.</p>
-          <p><strong>Founded:</strong> 2001</p>
-          <p><strong>Founder:</strong> Fu Liquan</p>
-          <p><strong>Headquarters:</strong> Hangzhou, Zhejiang, China</p>
-          <p><strong>Type:</strong> Public Company</p>
-
-          <h5 class="fw-bold mt-4 mb-3 text-dark border-start border-3 border-danger ps-3">Company Overview</h5>
-          <p>
-            Dahua Technology is one of the world’s leading providers of video surveillance products and solutions. 
-            The company focuses on video-centric AIoT (Artificial Intelligence of Things), offering innovative technologies 
-            for security monitoring, smart cities, and business intelligence.
-          </p>
-          <p>
-            Through continuous innovation, advanced R&D, and reliable products, Dahua contributes to creating safer, smarter, 
-            and more connected communities worldwide.
-          </p>
-
-          <h5 class="fw-bold mt-4 mb-3 text-dark border-start border-3 border-danger ps-3">Products and Services</h5>
-          <ul class="about-text text-muted fw-bold">
-            <li>CCTV Cameras and Recorders (DVR/NVR)</li>
-            <li>Access Control and Attendance Devices</li>
-            <li>Smart City and Traffic Solutions</li>
-            <li>AI and Cloud-Based Security Systems</li>
-            <li>Video Management Software</li>
-          </ul>
-
-          <h5 class="fw-bold mt-5 mb-3 text-dark border-start border-3 border-danger ps-3">Company Highlights (2021)</h5>
-          <ul class="about-text text-success fw-bold">
-            <li>Total operating revenue: RMB 32.835 billion (USD 4.98 billion), a year-on-year increase of 24.07%</li>
-            <li>Net profit after non-recurring gains/losses: RMB 3.103 billion (USD 470 million), up 13.47% YOY</li>
-            <li>Over 22,000 employees, with more than 50% engaged in R&D</li>
-            <li>Annual R&D investment: approximately 10% of sales revenue</li>
-            <li>Established specialized research institutes including:
-              <ul>
-                <li>Advanced Technology Institute</li>
-                <li>Big Data Institute</li>
-                <li>Central Research Institute</li>
-                <li>Cybersecurity Institute</li>
-                <li>Smart City Institute</li>
-              </ul>
-            </li>
-            <li>Expanding into new sectors such as machine vision, robotics, video collaboration, automotive electronics, and smart thermal imaging</li>
-          </ul>
-
-          <p class="about-text about-text-black mt-4">
-            Committed to the mission of <strong>“Enabling a safer society and smarter living”</strong>,
-            Dahua Technology stays true to its core value of being <strong>customer-centered</strong>. 
-            The company continuously strives to deliver reliable, intelligent, and innovative solutions for a more secure and connected world.
-          </p>
+          <!-- Thumbnails (Image Buttons) -->
+            <button type="button" class="thumb-btn" data-bs-target="#asaCarousel" data-bs-slide-to="2" aria-label="Back view">
+              <img src="PICS/DAHUAattendance3.png" alt="Back">
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="specification-panel bg-danger">
+        <!-- Product Specification Section -->
+    <div class="specification bg-white mt-5">
+      <h3 class="fw-bold text-center mb-4 mt-1 text-dark">Product Specifications</h3>
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+          <tbody>
+            <!-- SYSTEM PARAMETER -->
+            <tr class="table-danger">
+              <th colspan="2" class="text-center fw-bold">SYSTEM PARAMETER</th>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Main Processor</td>
+              <td>32-bit Processor</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Memory</td>
+              <td>8MB Flash</td>
+            </tr>
+
+            <!-- FINGERPRINT -->
+            <tr class="table-danger">
+              <th colspan="2" class="text-center fw-bold">FINGERPRINT</th>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Applicable</td>
+              <td>Yes</td>
+              
+            </tr>
+
+            <!-- CARD -->
+            <tr class="table-danger">
+              <th colspan="2" class="text-center fw-bold">FUNCTION</th>
+            </tr>
+            <tr>
+              <td class="fw-semibold">verification Mode</td>
+              <td>Fingerprint/Password,Only Fingerprint ,Only Password</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </section>
+
+
+
+
+
 
 
 
@@ -206,7 +207,7 @@
         <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
         <ul class="list-unstyled">
           <li><a href="products.html" class="footer-link">Attendance Device</a></li>
-          <li><a href="cctvdevice.html" class="footer-link">CCTV Device</a></li>
+          <li><a href="cctv.html" class="footer-link">CCTV Device</a></li>
           <li><a href="accessdevice.html" class="footer-link">Access Panel</a></li>
         </ul>
       </div>
@@ -302,6 +303,27 @@ document.addEventListener('DOMContentLoaded', function () {
   // Scroll both html and body
   document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
   document.body.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const carouselEl = document.getElementById('asaCarousel');
+  const thumbButtons = document.querySelectorAll('.thumb-btn');
+
+  thumbButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      thumbButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  carouselEl.addEventListener('slid.bs.carousel', function (e) {
+    const activeIndex = e.to;
+    thumbButtons.forEach((b, i) => {
+      b.classList.toggle('active', i === activeIndex);
+    });
   });
 });
 </script>

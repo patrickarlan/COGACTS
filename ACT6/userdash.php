@@ -1,9 +1,34 @@
+<?php
+session_start();
+// Prevent browser caching so back button doesn't show dashboard after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+if (!isset($_SESSION['user_id'])) {
+  header('Location: logsign.php');
+  exit();
+}
+$username = $_SESSION['username'] ?? 'User';
+$email = '';
+// Fetch user email from database
+$conn = new mysqli("localhost", "root", "", "cogact");
+if (!$conn->connect_error) {
+  $stmt = $conn->prepare("SELECT email FROM users WHERE id=?");
+  $stmt->bind_param("i", $_SESSION['user_id']);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if ($row = $result->fetch_assoc()) {
+    $email = $row['email'];
+  }
+  $conn->close();
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: CONTACTS</title>
+    <title>DAHUA: DASHBOARD</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
@@ -11,9 +36,58 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+    <style>
+      .welcome-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(8px);
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s cubic-bezier(.4,0,.2,1);
+      }
+      .welcome-overlay.show {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .welcome-overlay.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .welcome-modal {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        padding: 2.5rem 2rem 2rem 2rem;
+        min-width: 320px;
+        max-width: 90vw;
+        text-align: center;
+        animation: popIn 0.5s cubic-bezier(.4,0,.2,1);
+      }
+      @keyframes popIn {
+        0% { transform: scale(0.7); opacity: 0; }
+        60% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    </style>
 
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+<!-- Welcome Popout Modal -->
+<div id="welcomeOverlay" class="welcome-overlay">
+  <div class="welcome-modal">
+    <h4 class="mb-3">Welcome to your Dashboard!</h4>
+    <p class="mb-4">We're glad to have you here. Explore your favourites and orders below.</p>
+    <button id="thankYouBtn" class="btn btn-success px-4">Thank You</button>
+  </div>
+</div>
 <!-- Header/Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
@@ -22,6 +96,7 @@
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
+
 
     <!-- Navbar Toggler (for mobile) -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -40,9 +115,9 @@
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
             <ul class="list-unstyled m-0">
-              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222G</a></li>
-              <li><a href="attendance2.html" class="dropdown-item text-white py-2 px-3">ASA1222E-S</a></li>
-              <li><a href="attendance3.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
+              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">Attendance Monitoring</a></li>
+              <li><a href="accessdevice.html" class="dropdown-item text-white py-2 px-3">CCTV</a></li>
+              <li><a href="accessdevice.html" class="dropdown-item text-white py-2 px-3">Access Control</a></li>
             </ul>
           </div>
         </li>
@@ -83,14 +158,23 @@
 
         <!-- 👤 Profile Icon -->
         <div class="profile-container position-relative">
-          <a href="#" class="nav-link nav-hover text-white">
-            <i class="bi bi-person-circle"></i>
-          </a>
+          <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="userdash.php" class="nav-link nav-hover text-white">
+                      <i class="bi bi-person-circle"></i>
+                    </a>
+                  <?php else: ?>
+                    <span class="nav-link nav-hover text-white" style="cursor: default;">
+                      <i class="bi bi-person-circle"></i>
+                    </span>
+                  <?php endif; ?>
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="sign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
-          </div>
+            <?php if (isset($_SESSION['user_id'])): ?>
+              <a href="logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
+            <?php else: ?>
+              <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <?php endif; ?>
         </div>
       </div>
 
@@ -99,123 +183,71 @@
 </nav>
 
 
-<!-- Product 1: ASA1222G Overview -->
-<section class="product-overview py-5 bg-light">
-  <div class="container">
-    <div class="product-panel mx-auto p-5 text-center shadow-lg rounded-4 bg-white" style="max-width: 850px;">
-      <h2 class="fw-bold mb-4">ASA1222G Time Attendance Terminal</h2>
-      <p class="text-secondary mb-5">
-        Explore the different angles of the Dahua ASA1222G device below.
-      </p>
+<!-- Second Header / Banner -->
+<main style="flex: 1 0 auto;">
+<div class="container-fluid p-0 bg-dark">
+  <div class="banner">
+    <img src="PICS/DAHUAcontact.png" alt="Banner Image" class="img-fluid">
+  </div>
+</div>
 
-      <!-- Carousel -->
-      <div class="container py-3">
-        <div class="mx-auto text-center" style="max-width:760px;">
-          
-          <!-- Main Carousel -->
-          <div id="asaCarousel" class="carousel slide mb-3" data-bs-ride="carousel" data-bs-interval="false">
-            <div class="carousel-inner rounded overflow-hidden shadow-sm">
-              <div class="carousel-item active">
-                <img src="PICS/DAHUAattdevfr.png" class="d-block w-100" alt="ASA1222G - front">
-              </div>
-              <div class="carousel-item">
-                <img src="PICS/DAHUAattdevbck.png" class="d-block w-100" alt="ASA1222G - side">
-              </div>
-              <div class="carousel-item">
-                <img src="PICS/DAHUAattdevside.png" class="d-block w-100" alt="ASA1222G - back">
-              </div>
-            </div>
-
-            <!-- Controls (inside image edges) -->
-            <!--<button class="carousel-control-prev" type="button" data-bs-target="#asaCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#asaCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>-->
+<!--START HERE-->
+<section class="dashboard-section py-1 m0 bg-light">
+  <div class="dashboard-section container my-3 bg-light">
+    <div class="row justify-content-center align-items-start">
+      <!-- Profile Panel -->
+      <div class="col-md-3 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Profile</h5>
           </div>
-
-          <!-- Thumbnails (Image Buttons) -->
-          <div class="d-flex justify-content-center gap-3 align-items-center thumbnail-panel">
-            <button type="button" class="thumb-btn active" data-bs-target="#asaCarousel" data-bs-slide-to="0" aria-current="true" aria-label="Front view">
-              <img src="PICS/DAHUAattdevfr.png" alt="Front">
-            </button>
-
-            <button type="button" class="thumb-btn" data-bs-target="#asaCarousel" data-bs-slide-to="1" aria-label="Side view">
-              <img src="PICS/DAHUAattdevbck.png" alt="Side">
-            </button>
-
-            <button type="button" class="thumb-btn" data-bs-target="#asaCarousel" data-bs-slide-to="2" aria-label="Back view">
-              <img src="PICS/DAHUAattdevside.png" alt="Back">
-            </button>
+          <div class="card-body text-center">
+            <img src="PICS/DAHUAfavi.png" alt="Profile" class="rounded-circle mb-3" style="width:80px;height:80px;object-fit:cover;">
+            <h6 class="mb-1"><?php echo htmlspecialchars($username); ?></h6>
+            <p class="text-muted mb-2"><?php echo htmlspecialchars($email); ?></p>
+            <a href="#" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+          </div>
+        </div>
+      </div>
+      <!-- Favourite Panel -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Favourite Panel</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted">Your favourite products will appear here.</p>
+            <ul class="list-group list-group-flush" id="favourite-list">
+              <li class="list-group-item">No favourites yet.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Order Panel -->
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Order Panel</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted">Your recent orders will appear here.</p>
+            <ul class="list-group list-group-flush" id="order-list">
+              <li class="list-group-item">No orders yet.</li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="specification-panel bg-danger">
-        <!-- Product Specification Section -->
-    <div class="specification bg-white mt-5">
-      <h3 class="fw-bold text-center mb-4 mt-1 text-dark">Product Specifications</h3>
-
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle">
-          <tbody>
-            <!-- SYSTEM PARAMETER -->
-            <tr class="table-danger">
-              <th colspan="2" class="text-center fw-bold">SYSTEM PARAMETER</th>
-            </tr>
-            <tr>
-              <td class="fw-semibold">Main Processor</td>
-              <td>32-bit Processor</td>
-            </tr>
-            <tr>
-              <td class="fw-semibold">Storage Capacity</td>
-              <td>16 M ROM, 8 M SRAM, supports 100000 records</td>
-            </tr>
-            <tr>
-              <td class="fw-semibold">Operating Interface</td>
-              <td>LCD Interface</td>
-            </tr>
-
-            <!-- FINGERPRINT -->
-            <tr class="table-danger">
-              <th colspan="2" class="text-center fw-bold">FINGERPRINT</th>
-            </tr>
-            <tr>
-              <td class="fw-semibold">Applicable</td>
-              <td>Yes</td>
-            </tr>
-
-            <!-- CARD -->
-            <tr class="table-danger">
-              <th colspan="2" class="text-center fw-bold">CARD</th>
-            </tr>
-            <tr>
-              <td class="fw-semibold">Applicable</td>
-              <td>Yes</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
 </section>
-
-
-
-
+</main>
 
 
 
 
 <!-- Footer -->
  <!-- Footer Section -->
-<footer class="footer bg-dark text-white py-5">
+<footer class="footer bg-dark text-white py-5" style="flex-shrink: 0;">
 
   <!-- Top Columns: Centered -->
   <div class="container mb-4">
@@ -287,6 +319,24 @@ crossorigin="anonymous"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  const overlay = document.getElementById('welcomeOverlay');
+  const btn = document.getElementById('thankYouBtn');
+  setTimeout(() => {
+    overlay.classList.add('show');
+  }, 300);
+  btn.addEventListener('click', function () {
+    overlay.classList.remove('show');
+    overlay.classList.add('hide');
+    setTimeout(() => {
+      overlay.classList.remove('hide');
+      overlay.style.display = 'none';
+    }, 400);
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
   const btn = document.getElementById('scrollTopBtn');
   if (!btn) return;
 
@@ -322,27 +372,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Scroll both html and body
   document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
   document.body.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const carouselEl = document.getElementById('asaCarousel');
-  const thumbButtons = document.querySelectorAll('.thumb-btn');
-
-  thumbButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      thumbButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
-
-  carouselEl.addEventListener('slid.bs.carousel', function (e) {
-    const activeIndex = e.to;
-    thumbButtons.forEach((b, i) => {
-      b.classList.toggle('active', i === activeIndex);
-    });
   });
 });
 </script>

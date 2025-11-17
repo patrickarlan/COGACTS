@@ -1,3 +1,38 @@
+<?php
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $conn = new mysqli("localhost", "root", "", "cogact");
+    if ($conn->connect_error) {
+        $message = "Connection failed: " . $conn->connect_error;
+    } else {
+        $username = $_POST['reg-username'] ?? '';
+        $email = $_POST['reg-email'] ?? '';
+        $password = $_POST['reg-password'] ?? '';
+        if ($username && $email && $password) {
+            $check = $conn->prepare("SELECT * FROM users WHERE username=? OR email=?");
+            $check->bind_param("ss", $username, $email);
+            $check->execute();
+            $result = $check->get_result();
+            if ($result->num_rows > 0) {
+                $message = "Username or email already exists.";
+            } else {
+                $hashed = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $username, $email, $hashed);
+                if ($stmt->execute()) {
+                    $message = "Registration successful!";
+                } else {
+                    $message = "Error: " . $stmt->error;
+                }
+            }
+        } else {
+            $message = "All fields are required.";
+        }
+        $conn->close();
+    }
+}
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -18,7 +53,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -90,7 +125,7 @@
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="sign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
           </div>
         </div>
       </div>
@@ -147,6 +182,13 @@
                 <button type="button" class="btn btn-outline-primary w-100 register-btn" style="padding: 1rem 0; font-size: 1.25rem;" onclick="window.location.href='logsign.html'">Back to Login</button>
               </div>
           </form>
+          <?php if ($message): ?>
+            <?php if ($message === 'Registration successful!'): ?>
+              <div class="alert alert-success mt-3 text-center">Registration successful! You can now <a href="logsign.php">login</a>.</div>
+            <?php else: ?>
+              <div class="alert alert-danger mt-3 text-center"><?php echo $message; ?></div>
+            <?php endif; ?>
+          <?php endif; ?>
       </div>
     </div> 
   </div>

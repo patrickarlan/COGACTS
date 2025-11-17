@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: TIMETRACK</title>
+    <title>DAHUA: ABOUT US</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
@@ -18,7 +18,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -40,7 +40,7 @@
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
             <ul class="list-unstyled m-0">
-              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222G</a></li>
+              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
               <li><a href="attendance2.html" class="dropdown-item text-white py-2 px-3">ASA1222E-S</a></li>
               <li><a href="attendance3.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
             </ul>
@@ -90,7 +90,6 @@
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
             <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
-            <a href="logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
           </div>
         </div>
       </div>
@@ -101,113 +100,91 @@
 
 
 <!-- Second Header / Banner -->
-<div class="container-fluid p-0 bg-DARK">
+<div class="container-fluid p-0 bg-dark">
   <div class="banner">
-    <img src="PICS/DAHUA.png" alt="Banner Image" class="img-fluid">
+    <img src="PICS/DAHUAaboutus.png" alt="Banner Image" class="img-fluid">
   </div>
 </div>
 
-<!-- Overview / About + Product Section Combined -->
-<section class="overview py-5">
+<!-- About Section -->
+<section class="overview py-5 bg-light">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-20 text-center bg-white p-5 shadow rounded-3">
-        <h2 class="fw-bold mb-3">Welcome to DAHUA: Timetrack</h2>
-        <p class="custom-text mb-4">
-          The Dahua Attendance Monitoring System is a web-based solution developed to provide a reliable and efficient way to manage attendance records.
-          It enables accurate tracking of employee check-ins and check-outs, offering organizations a structured approach to monitoring workforce activity.
+      <div class="col-lg-10 bg-white shadow rounded-4 p-5">
+
+        <!-- Main Header -->
+        <h2 class="fw-bold text-center text-uppercase mb-4">About Dahua Technology</h2>
+        <hr class="mx-auto mb-4" style="width: 80%; height: 3px; background-color: #d32f2f; border: none;">
+
+        <!-- Overview Paragraph -->
+        <p class="about-text about-text-black mb-4 text-justify">
+          Zhejiang Dahua Technology Co., Ltd., widely known as Dahua Technology, is a global leader in video-centric AIoT solutions and services. 
+          Since launching its <em>‘Dahua Think’</em> corporate strategy in 2021, the company has focused on two key areas: City and Enterprise. 
+          Through AIoT and IoT digital intelligence platforms, Dahua drives the digital transformation of cities and enterprises, creating value across multiple industries.
         </p>
-        <p class="custom-text mb-5">
-          This website serves as a dedicated platform for showcasing Dahua’s attendance monitoring products and their key features.
-          Visitors can explore available devices, understand their capabilities, and learn how these solutions enhance productivity and accountability.
-          For registered users and existing customers, the site also provides secure access to attendance data and device management tools.
-        </p>
 
-        <!-- ✅ Product Carousel -->
-        <div class="product-carousel">
-          <h3 class="fw-bold mt-3 text-dark">Our Products</h3>
+        <!-- Image Panel -->
+        <div class="text-center my-4">
+          <img src="PICS/DAHUAabover.jpg" alt="About Dahua Technology" class="img-fluid rounded-3 shadow">
+          <p class="text-secondary mt-2 small">Dahua Technology Headquarters, Hangzhou, China</p>
+        </div>
 
-          <div id="dahuaProductCarousel" 
-              class="carousel slide mx-auto position-relative" 
-              data-bs-ride="carousel" 
-              data-bs-interval="3000" 
-              style="max-width:700px;">
+        <!-- Company Profiling -->
+        <div class="company-profile text-center mb-4 py-2 pt-4">
+          <h3 class="fw-bold text-uppercase text-dark mb-3">Company Profiling</h3>
+          <h4 class="fw-bold text-danger mb-4">Dahua Technology</h4>
+        </div>
 
-              <div class="carousel-inner overflow-hidden rounded-4">
+        <div class="text-start mt-2 mx-auto" style="max-width: 750px; font-size: 1.1rem; line-height: 1.7;">
+          <p><strong>Company Name:</strong> Zhejiang Dahua Technology Co., Ltd.</p>
+          <p><strong>Founded:</strong> 2001</p>
+          <p><strong>Founder:</strong> Fu Liquan</p>
+          <p><strong>Headquarters:</strong> Hangzhou, Zhejiang, China</p>
+          <p><strong>Type:</strong> Public Company</p>
 
-                <!-- Product 1 -->
-                <div class="carousel-item active">
-                  <div class="pcard mx-5 mb-5 mt-5">
-                    <div class="image-wrap position-relative">
-                      <img src="PICS/DAHUAprod1.png" class="pcard-img" alt="Dahua Product 1">
-                      <div class="pcard-overlay">
-                        <a href="attendancedevice.html" class="view-details">View Details</a>
-                      </div>
-                    </div>
-                    <div class="pcard-body">
-                      <h5 class="pcard-title">Dahua: ASA1222G</h5>
-                      <p class="pcard-desc">A standalone fingerprint time and attendance
-                                            terminal that uses fingerprint, password, or 
-                                            ID/IC card verification.</p>
-                      <p class="pcard-price">₱10,000</p>
-                    </div>
-                  </div>
-                </div>
+          <h5 class="fw-bold mt-4 mb-3 text-dark border-start border-3 border-danger ps-3">Company Overview</h5>
+          <p>
+            Dahua Technology is one of the world’s leading providers of video surveillance products and solutions. 
+            The company focuses on video-centric AIoT (Artificial Intelligence of Things), offering innovative technologies 
+            for security monitoring, smart cities, and business intelligence.
+          </p>
+          <p>
+            Through continuous innovation, advanced R&D, and reliable products, Dahua contributes to creating safer, smarter, 
+            and more connected communities worldwide.
+          </p>
 
-                <!-- Product 2 -->
-                <div class="carousel-item">
-                  <div class="pcard mx-5 mb-5 mt-5">
-                    <div class="image-wrap position-relative">
-                      <img src="PICS/DAHUAattendance2.png" class="pcard-img" alt="Dahua Attendance 2">
-                      <div class="pcard-overlay">
-                        <a href="attendance2.html" class="view-details">View Details</a>
-                      </div>
-                    </div>
-                    <div class="pcard-body">
-                      <h5 class="pcard-title">Dahua: ASA1222E-S</h5>
-                      <p class="pcard-desc">A standalone time and attendance terminal 
-                                            that uses fingerprint, password, or optional card 
-                                            for employee clock-ins.</p>
-                      <p class="pcard-price">₱5,500</p>
-                    </div>
-                  </div>
-                </div>
+          <h5 class="fw-bold mt-4 mb-3 text-dark border-start border-3 border-danger ps-3">Products and Services</h5>
+          <ul class="about-text text-muted fw-bold">
+            <li>CCTV Cameras and Recorders (DVR/NVR)</li>
+            <li>Access Control and Attendance Devices</li>
+            <li>Smart City and Traffic Solutions</li>
+            <li>AI and Cloud-Based Security Systems</li>
+            <li>Video Management Software</li>
+          </ul>
 
-                <!-- Product 3 -->
-                <div class="carousel-item">
-                  <div class="pcard mx-5 mb-5 mt-5">
-                    <div class="image-wrap position-relative">
-                      <img src="PICS/DAHUAattendance3.png" class="pcard-img" alt="Dahua Attendance 3">
-                      <div class="pcard-overlay">
-                        <a href="attendance3.html" class="view-details">View Details</a>
-                      </div>
-                    </div>
-                    <div class="pcard-body">
-                      <h5 class="pcard-title">Dahua: ASA1222E</h5>
-                      <p class="pcard-desc">A standalone time and attendance recorder 
-                                            used for managing employee work schedules 
-                                            and attendance for monitoring.</p>
-                      <p class="pcard-price">₱5,000</p>
-                    </div>
-                  </div>
-              </div>
-            </div>
+          <h5 class="fw-bold mt-5 mb-3 text-dark border-start border-3 border-danger ps-3">Company Highlights (2021)</h5>
+          <ul class="about-text text-success fw-bold">
+            <li>Total operating revenue: RMB 32.835 billion (USD 4.98 billion), a year-on-year increase of 24.07%</li>
+            <li>Net profit after non-recurring gains/losses: RMB 3.103 billion (USD 470 million), up 13.47% YOY</li>
+            <li>Over 22,000 employees, with more than 50% engaged in R&D</li>
+            <li>Annual R&D investment: approximately 10% of sales revenue</li>
+            <li>Established specialized research institutes including:
+              <ul>
+                <li>Advanced Technology Institute</li>
+                <li>Big Data Institute</li>
+                <li>Central Research Institute</li>
+                <li>Cybersecurity Institute</li>
+                <li>Smart City Institute</li>
+              </ul>
+            </li>
+            <li>Expanding into new sectors such as machine vision, robotics, video collaboration, automotive electronics, and smart thermal imaging</li>
+          </ul>
 
-            <!-- ✅ Carousel Controls (inside image area) -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#dahuaProductCarousel" data-bs-slide="prev">
-              <span class="custom-icon" aria-hidden="true">
-                <i class="bi bi-chevron-left text-white fs-4"></i>
-              </span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-
-            <button class="carousel-control-next" type="button" data-bs-target="#dahuaProductCarousel" data-bs-slide="next">
-              <span class="custom-icon" aria-hidden="true">
-                <i class="bi bi-chevron-right text-white fs-4"></i>
-              </span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
+          <p class="about-text about-text-black mt-4">
+            Committed to the mission of <strong>“Enabling a safer society and smarter living”</strong>,
+            Dahua Technology stays true to its core value of being <strong>customer-centered</strong>. 
+            The company continuously strives to deliver reliable, intelligent, and innovative solutions for a more secure and connected world.
+          </p>
         </div>
       </div>
     </div>
@@ -217,7 +194,9 @@
 
 
 <!-- Footer -->
+ <!-- Footer Section -->
 <footer class="footer bg-dark text-white py-5">
+
   <!-- Top Columns: Centered -->
   <div class="container mb-4">
     <div class="row justify-content-center text-center text-md-start">
@@ -227,7 +206,7 @@
         <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
         <ul class="list-unstyled">
           <li><a href="products.html" class="footer-link">Attendance Device</a></li>
-          <li><a href="cctv.html" class="footer-link">CCTV Device</a></li>
+          <li><a href="cctvdevice.html" class="footer-link">CCTV Device</a></li>
           <li><a href="accessdevice.html" class="footer-link">Access Panel</a></li>
         </ul>
       </div>

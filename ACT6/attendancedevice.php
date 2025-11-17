@@ -18,7 +18,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -89,7 +89,7 @@
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="sign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
           </div>
         </div>
       </div>
@@ -103,9 +103,9 @@
 <section class="product-overview py-5 bg-light">
   <div class="container">
     <div class="product-panel mx-auto p-5 text-center shadow-lg rounded-4 bg-white" style="max-width: 850px;">
-      <h2 class="fw-bold mb-4">ASA1222E Time Attendance Terminal</h2>
+      <h2 class="fw-bold mb-4">ASA1222G Time Attendance Terminal</h2>
       <p class="text-secondary mb-5">
-        Explore the different angles of the Dahua ASA1222E device below.
+        Explore the different angles of the Dahua ASA1222G device below.
       </p>
 
       <!-- Carousel -->
@@ -116,7 +116,13 @@
           <div id="asaCarousel" class="carousel slide mb-3" data-bs-ride="carousel" data-bs-interval="false">
             <div class="carousel-inner rounded overflow-hidden shadow-sm">
               <div class="carousel-item active">
-                <img src="PICS/DAHUAattendance3.png" class="d-block w-100" alt="ASA1222G - back">
+                <img src="PICS/DAHUAattdevfr.png" class="d-block w-100" alt="ASA1222G - front">
+              </div>
+              <div class="carousel-item">
+                <img src="PICS/DAHUAattdevbck.png" class="d-block w-100" alt="ASA1222G - side">
+              </div>
+              <div class="carousel-item">
+                <img src="PICS/DAHUAattdevside.png" class="d-block w-100" alt="ASA1222G - back">
               </div>
             </div>
 
@@ -132,8 +138,17 @@
           </div>
 
           <!-- Thumbnails (Image Buttons) -->
+          <div class="d-flex justify-content-center gap-3 align-items-center thumbnail-panel">
+            <button type="button" class="thumb-btn active" data-bs-target="#asaCarousel" data-bs-slide-to="0" aria-current="true" aria-label="Front view">
+              <img src="PICS/DAHUAattdevfr.png" alt="Front">
+            </button>
+
+            <button type="button" class="thumb-btn" data-bs-target="#asaCarousel" data-bs-slide-to="1" aria-label="Side view">
+              <img src="PICS/DAHUAattdevbck.png" alt="Side">
+            </button>
+
             <button type="button" class="thumb-btn" data-bs-target="#asaCarousel" data-bs-slide-to="2" aria-label="Back view">
-              <img src="PICS/DAHUAattendance3.png" alt="Back">
+              <img src="PICS/DAHUAattdevside.png" alt="Back">
             </button>
           </div>
         </div>
@@ -145,6 +160,7 @@
         <!-- Product Specification Section -->
     <div class="specification bg-white mt-5">
       <h3 class="fw-bold text-center mb-4 mt-1 text-dark">Product Specifications</h3>
+
       <div class="table-responsive">
         <table class="table table-striped table-bordered align-middle">
           <tbody>
@@ -157,8 +173,12 @@
               <td>32-bit Processor</td>
             </tr>
             <tr>
-              <td class="fw-semibold">Memory</td>
-              <td>8MB Flash</td>
+              <td class="fw-semibold">Storage Capacity</td>
+              <td>16 M ROM, 8 M SRAM, supports 100000 records</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Operating Interface</td>
+              <td>LCD Interface</td>
             </tr>
 
             <!-- FINGERPRINT -->
@@ -168,16 +188,15 @@
             <tr>
               <td class="fw-semibold">Applicable</td>
               <td>Yes</td>
-              
             </tr>
 
             <!-- CARD -->
             <tr class="table-danger">
-              <th colspan="2" class="text-center fw-bold">FUNCTION</th>
+              <th colspan="2" class="text-center fw-bold">CARD</th>
             </tr>
             <tr>
-              <td class="fw-semibold">verification Mode</td>
-              <td>Fingerprint/Password,Only Fingerprint ,Only Password</td>
+              <td class="fw-semibold">Applicable</td>
+              <td>Yes</td>
             </tr>
           </tbody>
         </table>

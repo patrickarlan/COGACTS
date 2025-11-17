@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -18,7 +21,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -35,27 +38,27 @@
         
         <!-- Products with hover panel -->
         <li class="nav-item position-relative hover-panel-parent">
-          <a class="nav-link nav-hover" href="products.html">Products</a>
+          <a class="nav-link nav-hover" href="products.php">Products</a>
 
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
             <ul class="list-unstyled m-0">
-              <li><a href="attendancedevice.html" class="dropdown-item text-white py-2 px-3">ASA1222G</a></li>
-              <li><a href="attendance2.html" class="dropdown-item text-white py-2 px-3">ASA1222E-S</a></li>
-              <li><a href="attendance3.html" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
+              <li><a href="attendancedevice.php" class="dropdown-item text-white py-2 px-3">ASA1222G</a></li>
+              <li><a href="attendance2.php" class="dropdown-item text-white py-2 px-3">ASA1222E-S</a></li>
+              <li><a href="attendance3.php" class="dropdown-item text-white py-2 px-3">ASA1222E</a></li>
             </ul>
           </div>
         </li>
 
         <!-- About Us with hover panel -->
         <li class="nav-item position-relative hover-panel-parent">
-          <a class="nav-link nav-hover" href="about.html">About Us</a>
+          <a class="nav-link nav-hover" href="about.php">About Us</a>
 
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
             <ul class="list-unstyled m-0">
-              <li><a href="about.html" class="dropdown-item text-white py-2 px-3">Introduction</a></li>
-              <li><a href="contact.html" class="dropdown-item text-white py-2 px-3">Contact Us</a></li>
+              <li><a href="about.php" class="dropdown-item text-white py-2 px-3">Introduction</a></li>
+              <li><a href="contact.php" class="dropdown-item text-white py-2 px-3">Contact Us</a></li>
             </ul>
           </div>
         </li>
@@ -83,14 +86,23 @@
 
         <!-- 👤 Profile Icon -->
         <div class="profile-container position-relative">
-          <a href="#" class="nav-link nav-hover text-white">
-            <i class="bi bi-person-circle"></i>
-          </a>
+                  <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="userdash.php" class="nav-link nav-hover text-white">
+                      <i class="bi bi-person-circle"></i>
+                    </a>
+                  <?php else: ?>
+                    <span class="nav-link nav-hover text-white" style="cursor: default;">
+                      <i class="bi bi-person-circle"></i>
+                    </span>
+                  <?php endif; ?>
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
-            <a href="logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
+            <?php if (isset($_SESSION['user_id'])): ?>
+              <a href="logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
+            <?php else: ?>
+              <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <?php endif; ?>
           </div>
         </div>
       </div>
@@ -141,7 +153,7 @@
                     <div class="image-wrap position-relative">
                       <img src="PICS/DAHUAprod1.png" class="pcard-img" alt="Dahua Product 1">
                       <div class="pcard-overlay">
-                        <a href="attendancedevice.html" class="view-details">View Details</a>
+                        <a href="attendancedevice.php" class="view-details">View Details</a>
                       </div>
                     </div>
                     <div class="pcard-body">
@@ -160,7 +172,7 @@
                     <div class="image-wrap position-relative">
                       <img src="PICS/DAHUAattendance2.png" class="pcard-img" alt="Dahua Attendance 2">
                       <div class="pcard-overlay">
-                        <a href="attendance2.html" class="view-details">View Details</a>
+                        <a href="attendance2.php" class="view-details">View Details</a>
                       </div>
                     </div>
                     <div class="pcard-body">
@@ -179,7 +191,7 @@
                     <div class="image-wrap position-relative">
                       <img src="PICS/DAHUAattendance3.png" class="pcard-img" alt="Dahua Attendance 3">
                       <div class="pcard-overlay">
-                        <a href="attendance3.html" class="view-details">View Details</a>
+                        <a href="attendance3.php" class="view-details">View Details</a>
                       </div>
                     </div>
                     <div class="pcard-body">
@@ -226,9 +238,9 @@
       <div class="col-md-3 mb-4">
         <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
         <ul class="list-unstyled">
-          <li><a href="products.html" class="footer-link">Attendance Device</a></li>
-          <li><a href="cctv.html" class="footer-link">CCTV Device</a></li>
-          <li><a href="accessdevice.html" class="footer-link">Access Panel</a></li>
+          <li><a href="products.php" class="footer-link">Attendance Device</a></li>
+          <li><a href="cctv.php" class="footer-link">CCTV Device</a></li>
+          <li><a href="accessdevice.php" class="footer-link">Access Panel</a></li>
         </ul>
       </div>
 
@@ -236,10 +248,10 @@
       <div class="col-md-3 mb-4">
         <h5 class="fw-bold text-uppercase mb-3 footer-title">About Us</h5>
         <ul class="list-unstyled">
-          <li><a href="about.html" class="footer-link">Introduction</a></li>
-          <li><a href="contact.html" class="footer-link">Contact Us</a></li>
-          <li><a href="terms.html" class="footer-link">Terms of Use</a></li>
-          <li><a href="privacy.html" class="footer-link">Privacy Policy</a></li>
+          <li><a href="about.php" class="footer-link">Introduction</a></li>
+          <li><a href="contact.php" class="footer-link">Contact Us</a></li>
+          <li><a href="terms.php" class="footer-link">Terms of Use</a></li>
+          <li><a href="privacy.php" class="footer-link">Privacy Policy</a></li>
         </ul>
       </div>
 
@@ -275,6 +287,7 @@
 <button id="scrollTopBtn" class="scroll-btn" aria-label="Scroll to top">
   <i class="bi bi-arrow-up text-white fs-5"></i>
 </button>
+
 
 
 

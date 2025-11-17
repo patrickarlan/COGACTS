@@ -1,3 +1,39 @@
+<?php
+session_start();
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $conn = new mysqli("localhost", "root", "", "cogact");
+  if ($conn->connect_error) {
+    $message = "Connection failed: " . $conn->connect_error;
+  } else {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+    if ($username && $password) {
+      $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
+      $stmt->bind_param("s", $username);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      if ($row = $result->fetch_assoc()) {
+        if (password_verify($password, $row['password'])) {
+                    // Set session variables for the logged-in user
+                    $_SESSION['user_id'] = $row['id'];
+                    $_SESSION['username'] = $row['username'];
+                    // Redirect to user dashboard
+                    header('Location: userdash.php');
+                    exit();
+        } else {
+          $message = "Invalid password.";
+        }
+      } else {
+        $message = "User not found.";
+      }
+    } else {
+      $message = "All fields are required.";
+    }
+    $conn->close();
+  }
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -18,7 +54,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
     <!-- Website Title -->
-     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.html">
+     <a class="navbar-brand nav-hover fw-bold text-white d-flex align-items-center" href="index.php">
         <img src="PICS/DAHUAfavi.png" alt="Logo" class="navbar-logo ms-3 mx-3">
         <span>DAHUA: Timetrack</span>
     </a>
@@ -90,7 +126,7 @@
 
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
-            <a href="sign.html" class="dropdown-item text-white py-2 px-3">Sign In</a>
+            <a href="login.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
           </div>
         </div>
       </div>
@@ -106,15 +142,15 @@
     <div class="container-login shadow">
       <div class="card login-panel shadow" style="width: 100%;">
             <h3 class="text-center mb-4">Login</h3>
-            <form action="login.php" method="POST">
+            <form action="logsign.php" method="POST">
               <div class="mb-3 position-relative">
                   <label for="username" class="form-label">Username</label>
-                  <input type="text" class="form-control login-control" id="username" placeholder="Enter username">
+                  <input type="text" class="form-control login-control" id="username" name="username" placeholder="Enter username">
               </div>
               <div class="mb-3 position-relative">
                   <label for="password" class="form-label">Password</label>
                   <div style="position:relative;">
-                    <input type="password" class="form-control login-control" id="password" placeholder="Enter password" style="padding-right:2.5rem;">
+                    <input type="password" class="form-control login-control" id="password" name="password" placeholder="Enter password" style="padding-right:2.5rem;">
                     <span class="show-password-icon" onclick="togglePassword()" style="position:absolute; top:50%; right:1rem; transform:translateY(-50%); cursor:pointer;">
                       <i class="bi bi-eye" id="togglePasswordIcon" style="font-size:1.5rem;"></i>
                     </span>

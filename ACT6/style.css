@@ -1,3 +1,37 @@
+@media (max-width: 992px) {
+  .hover-panel {
+    position: static;
+    top: auto;
+    left: auto;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+    margin-top: 0.5rem;
+    display: none;
+    z-index: auto;
+  }
+  .hover-panel.show {
+    display: block;
+  }
+  .dropdown-toggle-icon {
+    margin-left: auto;
+    margin-right: 0;
+    font-size: 1.1em;
+    vertical-align: middle;
+    cursor: pointer;
+    display: inline-block;
+  }
+}
+@media (max-width: 992px) {
+  .custom-nav .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 10px !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+}
 /* Remove white space below footer for desktop */
 @media (min-width: 992px) {
   body {
@@ -111,7 +145,7 @@ section:last-of-type {
 .navbar-logo {
   width: 50px; /* adjust logo size */
   height: auto;
-  filter: brightness(0) invert(1); /* makes it white on dark bg */
+  filter: brightxess(0) invert(1); /* makes it white on dark bg */
   padding-left: 10px; /* spacing between text and logo */
   transition: transform 0.3s ease;
 }
@@ -119,8 +153,6 @@ section:last-of-type {
 .navbar-brand:hover .navbar-logo {
   transform: scale(1.1); /* subtle hover zoom effect */
 }
-
-
 
 .navbar .navbar-brand.nav-hover:hover {
     color: #dc3545 !important; /* Dahua red */
@@ -133,11 +165,10 @@ section:last-of-type {
     border-radius: 8px;
 }
 
-
 /* Navigation Bar Customization */
 
 .navbar {
-    padding: 1.5rem 3rem;
+  padding: 1rem 3rem;
 }
 
 .navbar .container-fluid {
@@ -145,8 +176,11 @@ section:last-of-type {
   padding-right: 1rem;
 }
 
+
 .custom-nav .nav-link {
   margin: 0 20px;
+  margin-right: 120px;
+  margin-left: -70px;
 }
 
 .nav-hover {
@@ -168,8 +202,6 @@ section:last-of-type {
 .navbar .nav-link.nav-hover:hover {
     color: #ff0019 !important;  /* Dahua red */
 }
-
-
 
 /*Hover panel-------------------------------------------------------------------------------*/
 
@@ -198,6 +230,7 @@ section:last-of-type {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  left: -70px;
 }
 
 /* Item styles */
@@ -466,18 +499,56 @@ hr {
 section.terms-section {
   background-color: #ffffff !important; /* same as body bg-light */
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  margin: 0 !important; /* remove external Bootstrap spacing */
+  margin: 2rem 2rem !important; 
 }
 
 /* Use a simple selector for reliability */
 .terms-banner {
   background-color: #ffffff !important; /* same as body bg-light */
-  margin: 5rem !important; /* custom outer spacing */
-  padding: 2rem 1rem;
+  margin-block: 2rem !important; /* top/bottom */
+  margin-inline: 15rem !important; /* desktop wide margin */
+  padding: 2rem 5rem !important;
 }
 
+@media (max-width: 991.98px) {
+  .terms-banner {
+    margin-inline: 2rem !important; /* tablet medium margin */
+  }
+}
+
+@media (max-width: 575.98px) {
+  .terms-banner {
+    margin-inline: 1rem !important; /* mobile small margin */
+  }
+}
+
+
+/* --- Privacy Policy ---------------------------------------------------------------*/
+
+section.privacy-section {
+  background-color: #ffffff !important; /* same as body bg-light */
+  padding: 2rem;
+  margin: 2rem 2rem !important; 
+}
+
+.privacy-banner {
+  background-color: #ffffff !important; /* same as body bg-light */
+  margin-block: 2rem !important; /* top/bottom */
+  margin-inline: 15rem !important; /* desktop wide margin */
+  padding: 2rem 5rem !important;
+}
+
+@media (max-width: 991.98px) {
+  .privacy-banner {
+    margin-inline: 2rem !important; /* tablet medium margin */
+  }
+}
+
+@media (max-width: 575.98px) {
+  .privacy-banner {
+    margin-inline: 1rem !important; /* mobile small margin */
+  }
+}
 
 /* Product Carousel Section---------------------------------------------------------------------*/
 .product-carousel {
@@ -1290,8 +1361,22 @@ section.terms-section {
   box-shadow: 0 4px 16px rgba(40,167,69,0.15);
   transform: translateY(-2px) scale(1.03);
 }
+@media (max-width: 992px) {
+  .custom-nav .nav-item {
+    width: 100%;
+  }
+  .hover-panel {
+    position: static !important;
+    width: 100% !important;
+    left: unset !important;
+    top: unset !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin-top: 0 !important;
+    z-index: auto !important;
+  }
+}
 
 
 
 
- 

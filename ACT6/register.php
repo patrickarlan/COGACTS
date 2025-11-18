@@ -1,53 +1,11 @@
-<?php
-$message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conn = new mysqli("localhost", "root", "", "cogact");
-    if ($conn->connect_error) {
-        $message = "Connection failed: " . $conn->connect_error;
-    } else {
-        $username = $_POST['reg-username'] ?? '';
-        $email = $_POST['reg-email'] ?? '';
-        $password = $_POST['reg-password'] ?? '';
-        if ($username && $email && $password) {
-            $check = $conn->prepare("SELECT * FROM users WHERE username=? OR email=?");
-            $check->bind_param("ss", $username, $email);
-            $check->execute();
-            $result = $check->get_result();
-            if ($result->num_rows > 0) {
-                $message = "Username or email already exists.";
-            } else {
-                $hashed = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $username, $email, $hashed);
-                if ($stmt->execute()) {
-                    $message = "Registration successful!";
-                } else {
-                    $message = "Error: " . $stmt->error;
-                }
-            }
-        } else {
-            $message = "All fields are required.";
-        }
-        $conn->close();
-    }
-}
-?>
+<?php include 'BACKEND/registererror.php'; ?>
+
 
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: SIGN UP</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+<?php include 'COMPONENTS/head.php'; ?>
 
-</head>
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
 
@@ -89,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <input type="checkbox" class="form-check-input" id="registerTerms">
                   <label class="form-check-label" for="registerTerms">
                     I agree to the
-                    <a href="terms.html" target="_blank" style="color:#007bff;text-decoration:underline;">Terms</a>
+                    <a href="terms.php" target="_blank" style="color:#007bff;text-decoration:underline;">Terms</a>
                     and
-                    <a href="privacy.html" target="_blank" style="color:#007bff;text-decoration:underline;">Privacy Policy</a>
+                    <a href="privacy.php" target="_blank" style="color:#007bff;text-decoration:underline;">Privacy Policy</a>
                   </label>
               </div>
               <div class="d-grid gap-2">
@@ -175,226 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </button>
 
 
-
-
-
-
-
 <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
 crossorigin="anonymous"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const btn = document.getElementById('scrollTopBtn');
-  if (!btn) return;
-
-  // Check scroll position and toggle visibility when user has scrolled past 50% 
-  function checkButtonVisibility() {
-    const doc = document.documentElement;
-    const scrollTop = window.scrollY || window.pageYOffset;
-    const maxScroll = doc.scrollHeight - window.innerHeight; // total scrollable distance
-
-    // if there's nothing to scroll, hide button
-    if (maxScroll <= 0) {
-      btn.classList.remove('visible');
-      return;
-    }
-
-    const threshold = maxScroll * 0.5;
-    if (scrollTop > threshold) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
-    }
-  }
-
-  // initial check
-  checkButtonVisibility();
-
-  // update on scroll and resize (recalculate threshold on resize)
-  window.addEventListener('scroll', checkButtonVisibility, { passive: true });
-  window.addEventListener('resize', checkButtonVisibility);
-
-  // Scroll to top when clicked
-  btn.addEventListener('click', function () {
-  // Scroll both html and body
-  document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-  document.body.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-});
-</script>
-
-<script>
-function togglePassword() {
-  const passwordInput = document.getElementById('password');
-  const icon = document.getElementById('togglePasswordIcon');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    icon.classList.remove('bi-eye');
-    icon.classList.add('bi-eye-slash');
-  } else {
-    passwordInput.type = 'password';
-    icon.classList.remove('bi-eye-slash');
-    icon.classList.add('bi-eye');
-  }
-}
-
-function toggleRegisterPassword() {
-  const passwordInput = document.getElementById('reg-password');
-  const icon = document.getElementById('toggleRegisterPasswordIcon');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    icon.classList.remove('bi-eye');
-    icon.classList.add('bi-eye-slash');
-  } else {
-    passwordInput.type = 'password';
-    icon.classList.remove('bi-eye-slash');
-    icon.classList.add('bi-eye');
-  }
-}
-
-function toggleRegisterConfirmPassword() {
-  const confirmPasswordInput = document.getElementById('reg-confirm-password');
-  const icon = document.getElementById('toggleRegisterConfirmPasswordIcon');
-  if (confirmPasswordInput.type === 'password') {
-    confirmPasswordInput.type = 'text';
-    icon.classList.remove('bi-eye');
-    icon.classList.add('bi-eye-slash');
-  } else {
-    confirmPasswordInput.type = 'password';
-    icon.classList.remove('bi-eye-slash');
-    icon.classList.add('bi-eye');
-  }
-}
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('form');
-  // Remove error state on input for text fields
-  const fields = ['reg-username', 'reg-email', 'reg-password', 'reg-confirm-password'];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('input', function() {
-        // Remove error class and tooltip if field is valid
-        if (el.classList.contains('error')) {
-            if (id === 'reg-email') {
-              // Email: must be non-empty, contain '@', a period after '@', and a valid domain ending
-              const value = el.value.trim();
-              // Simple regex for email validation
-              const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-              if (emailPattern.test(value)) {
-                el.classList.remove('error');
-                const tooltip = el.parentElement.querySelector('.error-tooltip');
-                if (tooltip) tooltip.remove();
-              }
-          } else if (id === 'reg-confirm-password') {
-            // Confirm password: must match password
-            const passwordEl = document.getElementById('reg-password');
-            if (el.value.trim() && passwordEl.value === el.value) {
-              el.classList.remove('error');
-              const tooltip = el.parentElement.querySelector('.error-tooltip');
-              if (tooltip) tooltip.remove();
-            }
-          } else {
-            // Other fields: just non-empty
-            if (el.value.trim()) {
-              el.classList.remove('error');
-              const tooltip = el.parentElement.querySelector('.error-tooltip');
-              if (tooltip) tooltip.remove();
-            }
-          }
-        }
-      });
-    }
-  });
-  // Remove error state on check for terms checkbox
-  const terms = document.getElementById('registerTerms');
-  if (terms) {
-    terms.addEventListener('change', function() {
-      if (terms.checked) {
-        terms.classList.remove('error');
-        const tooltip = terms.parentElement.querySelector('.error-tooltip');
-        if (tooltip) tooltip.remove();
-      }
-    });
-  }
-
-  form.addEventListener('submit', function (e) {
-    // Remove previous errors and error classes
-    document.querySelectorAll('.error-tooltip').forEach(el => el.remove());
-    document.querySelectorAll('.register-control').forEach(el => el.classList.remove('error'));
-    document.querySelectorAll('.form-check-input').forEach(el => el.classList.remove('error'));
-    let hasError = false;
-    const username = document.getElementById('reg-username');
-    const email = document.getElementById('reg-email');
-    const password = document.getElementById('reg-password');
-    const confirmPassword = document.getElementById('reg-confirm-password');
-    const terms = document.getElementById('registerTerms');
-
-    // Error checks
-    if (!username.value.trim()) {
-      showTooltip(username, "Username is required.");
-      hasError = true;
-    }
-    if (!email.value.trim()) {
-      showTooltip(email, "Email is required.");
-      hasError = true;
-    } else if (!email.value.includes('@')) {
-      showTooltip(email, "Please include an '@' in the email address. '" + email.value + "' is missing an '@'.");
-      hasError = true;
-    }
-    if (!password.value.trim()) {
-      showTooltip(password, "Password is strictly required.");
-      hasError = true;
-    }
-      if (!confirmPassword.value.trim()) {
-        showTooltip(confirmPassword, "Please confirm your password.");
-        hasError = true;
-      } else if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
-        showTooltip(confirmPassword, "Passwords do not match.");
-        hasError = true;
-      } else {
-        // If confirm password is correct, remove error style immediately
-        confirmPassword.classList.remove('error');
-        const tooltip = confirmPassword.parentElement.querySelector('.error-tooltip');
-        if (tooltip) tooltip.remove();
-      }
-    if (!terms.checked) {
-      terms.classList.add('error');
-      showTooltip(terms, "You must agree to the Terms and Privacy Policy.", true);
-      hasError = true;
-    } else {
-      terms.classList.remove('error');
-        // Remove tooltip if present
-        const tooltip = terms.parentElement.querySelector('.error-tooltip');
-        if (tooltip) tooltip.remove();
-    }
-    if (hasError) {
-      // Prevent submission if there are errors
-      e.preventDefault();
-    }
-    // If no error, allow normal form submission to backend
-  });
-
-  function showTooltip(input, message, isCheckbox) {
-    if (isCheckbox) {
-      let tooltip = document.createElement('div');
-      tooltip.className = 'error-tooltip';
-      tooltip.innerHTML = '<span class="error-icon"><i class="bi bi-exclamation-square-fill"></i></span>' + message;
-      input.parentElement.insertBefore(tooltip, input.nextSibling);
-      return;
-    }
-    input.classList.add('error');
-    let tooltip = document.createElement('div');
-    tooltip.className = 'error-tooltip';
-    tooltip.innerHTML = '<span class="error-icon"><i class="bi bi-exclamation-square-fill"></i></span>' + message;
-    input.parentElement.insertBefore(tooltip, input.nextSibling);
-  }
-});
-</script>
+<?php include 'BACKEND/registerjs.php'; ?>
 
 </body> 
 </html>

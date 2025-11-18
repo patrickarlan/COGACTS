@@ -24,7 +24,7 @@ if (session_status() === PHP_SESSION_NONE) {
         
         <!-- Products with hover panel -->
         <li class="nav-item position-relative hover-panel-parent">
-          <a class="nav-link nav-hover" href="products.php">Products</a>
+          <a class="nav-link nav-hover" href="products.php">Products <span class="dropdown-toggle-icon d-lg-none">&#9660;</span></a>
 
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
@@ -38,7 +38,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <!-- About Us with hover panel -->
         <li class="nav-item position-relative hover-panel-parent">
-          <a class="nav-link nav-hover" href="about.php">About Us</a>
+          <a class="nav-link nav-hover" href="about.php">About Us <span class="dropdown-toggle-icon d-lg-none">&#9660;</span></a>
 
           <!-- Hover Panel -->
           <div class="hover-panel bg-dark text-white py-4 px-0 shadow rounded-3">
@@ -72,16 +72,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <!-- 👤 Profile Icon -->
         <div class="profile-container position-relative">
-                  <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="userdash.php" class="nav-link nav-hover text-white">
-                      <i class="bi bi-person-circle"></i>
-                    </a>
-                  <?php else: ?>
-                    <span class="nav-link nav-hover text-white" style="cursor: default;">
-                      <i class="bi bi-person-circle"></i>
-                    </span>
-                  <?php endif; ?>
-
+          <a href="userdash.php" class="nav-link nav-hover text-white profile-icon-link">
+            <i class="bi bi-person-circle"></i>
+          </a>
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -96,3 +89,49 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
   </div>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function isMobile() {
+    return window.innerWidth <= 992;
+  }
+  document.querySelectorAll('.hover-panel-parent').forEach(function(parent) {
+    var link = parent.querySelector('.nav-link');
+    var panel = parent.querySelector('.hover-panel');
+    var icon = parent.querySelector('.dropdown-toggle-icon');
+    if (icon) {
+      icon.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (isMobile()) {
+          // Close other panels
+          document.querySelectorAll('.hover-panel.show').forEach(function(otherPanel) {
+            if (otherPanel !== panel) {
+              otherPanel.classList.remove('show');
+            }
+          });
+          panel.classList.toggle('show');
+        }
+      });
+    }
+    link.addEventListener('click', function(e) {
+      if (isMobile()) {
+        e.preventDefault();
+        // Close other panels
+        document.querySelectorAll('.hover-panel.show').forEach(function(otherPanel) {
+          if (otherPanel !== panel) {
+            otherPanel.classList.remove('show');
+          }
+        });
+        panel.classList.toggle('show');
+      }
+    });
+  });
+  window.addEventListener('resize', function() {
+    if (!isMobile()) {
+      document.querySelectorAll('.hover-panel').forEach(function(panel) {
+        panel.classList.remove('show');
+      });
+    }
+  });
+});
+</script>

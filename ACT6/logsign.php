@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } else {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
+    $remember = isset($_POST['rememberMe']);
     if ($username && $password) {
       $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
       $stmt->bind_param("s", $username);
@@ -18,6 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Set session variables for the logged-in user
                     $_SESSION['user_id'] = $row['id'];
                     $_SESSION['username'] = $row['username'];
+                    // Set cookies if remember me is checked
+                    if ($remember) {
+                      setcookie('remember_username', $username, time()+60*60*24*30, '/');
+                      setcookie('remember_password', $password, time()+60*60*24*30, '/');
+                    } else {
+                      setcookie('remember_username', '', time()-3600, '/');
+                      setcookie('remember_password', '', time()-3600, '/');
+                    }
                     // Redirect to user dashboard
                     header('Location: userdash.php');
                     exit();
@@ -38,19 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: SIGN IN</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+<?php include 'COMPONENTS/head.php'; ?>
 
-</head>
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
 
@@ -64,19 +63,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="logsign.php" method="POST">
               <div class="mb-3 position-relative">
                   <label for="username" class="form-label">Username</label>
-                  <input type="text" class="form-control login-control" id="username" name="username" placeholder="Enter username">
+                  <input type="text" class="form-control login-control" id="username" name="username" placeholder="Enter username" value="<?php echo isset($_COOKIE['remember_username']) ? htmlspecialchars($_COOKIE['remember_username']) : ''; ?>">
               </div>
               <div class="mb-3 position-relative">
                   <label for="password" class="form-label">Password</label>
                   <div style="position:relative;">
-                    <input type="password" class="form-control login-control" id="password" name="password" placeholder="Enter password" style="padding-right:2.5rem;">
+                    <input type="password" class="form-control login-control" id="password" name="password" placeholder="Enter password" style="padding-right:2.5rem;" value="<?php echo isset($_COOKIE['remember_password']) ? htmlspecialchars($_COOKIE['remember_password']) : ''; ?>">
                     <span class="show-password-icon" onclick="togglePassword()" style="position:absolute; top:50%; right:1rem; transform:translateY(-50%); cursor:pointer;">
                       <i class="bi bi-eye" id="togglePasswordIcon" style="font-size:1.5rem;"></i>
                     </span>
                   </div>
               </div>
               <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" id="rememberMe">
+                  <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" <?php echo isset($_COOKIE['remember_username']) ? 'checked' : ''; ?>>
                   <label class="form-check-label" for="rememberMe">Remember me</label>
               </div>
               <div class="d-grid gap-2">

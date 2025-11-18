@@ -5,7 +5,7 @@
     <div class="row justify-content-center text-center text-md-start">
       
       <!-- Column 1: Products -->
-      <div class="col-md-3 mb-4">
+      <div class="col-md-3 mb-4 text-center">
         <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
         <ul class="list-unstyled">
           <li><a href="products.php" class="footer-link">Attendance Device</a></li>
@@ -15,7 +15,7 @@
       </div>
 
       <!-- Column 2: About Us -->
-      <div class="col-md-3 mb-4">
+      <div class="col-md-3 mb-4 text-center">
         <h5 class="fw-bold text-uppercase mb-3 footer-title">About Us</h5>
         <ul class="list-unstyled">
           <li><a href="about.php" class="footer-link">Introduction</a></li>

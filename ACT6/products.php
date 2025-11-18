@@ -1,18 +1,17 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  include 'COMPONENTS/needtosign.php';
+  showNeedToSignPopup();
+  exit;
+}
+?>
+
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: PRODUCTS</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+<?php include 'COMPONENTS/head.php'; ?>
 
-</head>
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
 
@@ -48,7 +47,7 @@
               <p class="price text-success fw-bold fs-5 mt-3">₱10,000</p>
             </div>
             <div class="card-footer bg-transparent pb-3 border-0">
-              <a href="attendancedevice.html" class="btn btn-primary w-100 fw-semibold">Learn More</a>
+              <a href="attendancedevice.php" class="btn btn-primary w-100 fw-semibold">Learn More</a>
             </div>
           </div>
         </div>
@@ -69,7 +68,7 @@
               <p class="price text-success fw-bold fs-5 mt-3">₱5,500</p>
             </div>
             <div class="card-footer bg-transparent pb-3 border-0">
-              <a href="attendance2.html" class="btn btn-primary w-100 fw-semibold">Learn More</a>
+              <a href="attendance2.php" class="btn btn-primary w-100 fw-semibold">Learn More</a>
             </div>
           </div>
         </div>
@@ -90,7 +89,7 @@
               <p class="price text-success fw-bold fs-5 mt-3">₱5,000</p>
             </div>
             <div class="card-footer bg-transparent pb-3 border-0">
-              <a href="attendance3.html" class="btn btn-primary w-100 fw-semibold">Learn More</a>
+              <a href="attendance3.php" class="btn btn-primary w-100 fw-semibold">Learn More</a>
             </div>
           </div>
         </div>

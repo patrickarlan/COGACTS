@@ -461,6 +461,23 @@ hr {
   transition: none;
 }
 
+/* --- Terms of Use ---------------------------------------------------------------*/
+
+section.terms-section {
+  background-color: #ffffff !important; /* same as body bg-light */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin: 0 !important; /* remove external Bootstrap spacing */
+}
+
+/* Use a simple selector for reliability */
+.terms-banner {
+  background-color: #ffffff !important; /* same as body bg-light */
+  margin: 5rem !important; /* custom outer spacing */
+  padding: 2rem 1rem;
+}
+
 
 /* Product Carousel Section---------------------------------------------------------------------*/
 .product-carousel {
@@ -1273,6 +1290,7 @@ hr {
   box-shadow: 0 4px 16px rgba(40,167,69,0.15);
   transform: translateY(-2px) scale(1.03);
 }
+
 
 
 

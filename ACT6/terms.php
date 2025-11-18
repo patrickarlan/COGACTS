@@ -1,17 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: TERMS OF USE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
-
-</head>
+<?php include 'COMPONENTS/head.php'; ?>
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
 
@@ -19,14 +8,103 @@
 <!-- Second Header / Banner -->
 <div class="container-fluid p-0 bg-dark">
   <div class="banner">
-    <img src="PICS/DAHUAcontact.png" alt="Banner Image" class="img-fluid">
+    <img src="PICS/DAHUAaboutus.png" alt="Banner Image" class="img-fluid">
   </div>
 </div>
 
 <!--START HERE-->
-<section class="contact-section py-1 m0 bg-light">
-  <div class="contact-banner container text-center my-5 bg-light">
-    
+<section class="terms-section py-5">
+  <div class="terms-banner p-4 shadow rounded-3 bg-white">
+    <h2 class="fw-bold mb-4 text-center">Terms of Use</h2>
+    <p class="terms fw-bold mb-3">
+      Acceptance of Terms</p>
+    <p class="termtext mb-4">
+      By using this website, you agree to follow these Terms of Use. 
+      If you do not agree, please do not use the site. 
+      Our Privacy Policy explains how we collect and use your 
+      information and is part of these terms.</p>
+    <p class="terms fw-bold mb-3">
+      Scope of Service</p>
+    <p class="termtext mb-4">
+      This website provides information about Dahua's attendance 
+      monitoring products and services. We may change or stop 
+      offering any part of the site at any time without notice.</p>
+    <p class="terms fw-bold mb-3">
+      Electronic Communications</p>
+    <p class="termtext mb-4">
+      By using this site, you consent to receive electronic 
+      communications from us. We may send you important 
+      information about your account or the site.</p>
+    <p class="terms fw-bold mb-3">
+      Intellectual Property</p>
+    <p class="termtext mb-4">
+      All content on this website, including text, images, 
+      logos, and software, is owned by Dahua or its licensors 
+      and is protected by copyright and other laws. You may 
+      not use any content without our permission.</p>
+    <p class="terms fw-bold mb-3">
+      Trademarks</p>
+    <p class="termtext mb-4">
+      “Dahua”, “Dahua Technology”, “Dahua Security”, 
+      and related logos are trademarks of the Company.
+      Do not use these trademarks without our written permission.</p>
+    <p class="terms fw-bold mb-3">
+      Prohibited Use</p>
+    <p class="termtext mb-4">
+      You agree not to use this website for any illegal or 
+      unauthorized purpose. You must not interfere with the 
+      operation of the site or attempt to access it using 
+      methods other than the provided interface.</p>
+    <p class="terms fw-bold mb-3">
+      Prohibited Use</p>
+    <p class="termtext mb-4">
+      You agree not to use this website for any illegal or 
+      unauthorized purpose. You must not interfere with the 
+      operation of the site or attempt to access it using 
+      methods other than the provided interface.</p>
+    <p class="terms fw-bold mb-3">
+      Third-Party Information</p>
+    <p class="termtext mb-4">
+      The site may include links or content from third parties. 
+      We do not guarantee their accuracy and are not responsible for them.</p>
+    <p class="terms fw-bold mb-3">
+      Viruses</p>
+    <p class="termtext mb-4">
+      We cannot guarantee the site is free from harmful code. 
+      You are responsible for protecting your devices.
+      Do not attempt to damage or disrupt the site.</p>
+    <p class="terms fw-bold mb-3">
+      Liability</p>
+    <p class="termtext mb-4">
+      To the fullest extent permitted by law, Dahua is not 
+      liable for any damages arising from your use of this website. 
+      Use the site at your own risk.</p>
+    <p class="terms fw-bold mb-3">
+      Governing Law</p>
+    <p class="termtext mb-4">
+      These terms are governed by the laws of the jurisdiction 
+      where Dahua is headquartered, without regard to conflict 
+      of law principles.</p>
+    <p class="terms fw-bold mb-3">
+      Severability</p>
+    <p class="termtext mb-4">
+      If any part of these terms is found to be invalid or 
+      unenforceable, the remaining provisions will remain in effect.</p>
+    <p class="terms fw-bold mb-3">
+      No Agency</p>
+    <p class="termtext mb-4">
+      Nothing in these terms creates an agency, partnership, 
+      or joint venture between you and Dahua.</p>
+    <p class="terms fw-bold mb-3">
+      Changes to Terms</p>
+    <p class="termtext mb-4">
+      We may update these terms at any time. Continued use 
+      of the site after changes means you accept the new terms.</p>
+    <p class="terms fw-bold mb-3">
+      Contact</p>
+    <p class="termtext mb-4">
+      If you have questions about these Terms of Use, 
+      please contact us through the information on our Contact Us page.</p>
   </div>
 </section>
 

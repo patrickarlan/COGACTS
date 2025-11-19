@@ -1,26 +1,31 @@
 <?php
+// requireLogin.php logic embedded at the very top
 session_start();
-// Prevent browser caching so back button doesn't show dashboard after logout
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
+
+// If not logged in, redirect immediately
 if (!isset($_SESSION['user_id'])) {
-  header('Location: logsign.php');
-  exit();
+    header("Location: logsign.php");
+    exit();
 }
+
+// Prevent caching
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+// Fetch user data
 $username = $_SESSION['username'] ?? 'User';
 $email = '';
-// Fetch user email from database
 $conn = new mysqli("localhost", "root", "", "cogact");
 if (!$conn->connect_error) {
-  $stmt = $conn->prepare("SELECT email FROM users WHERE id=?");
-  $stmt->bind_param("i", $_SESSION['user_id']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  if ($row = $result->fetch_assoc()) {
-    $email = $row['email'];
-  }
-  $conn->close();
+    $stmt = $conn->prepare("SELECT email FROM users WHERE id=?");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $email = $row['email'];
+    }
+    $conn->close();
 }
 ?>
 <!doctype html>
@@ -29,14 +34,36 @@ if (!$conn->connect_error) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAHUA: DASHBOARD</title>
-
+    <!-- BFCache / back button protection -->
+    <script>
+    window.addEventListener("pageshow", function(event) {
+        if (event.persisted || (performance.getEntriesByType("navigation")[0].type === "back_forward")) {
+            window.location.replace("logsign.php");
+        }
+    });
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
-    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+    <link rel="stylesheet" href="style.css">
     <style>
+          /* Optional fade-in overlay */
+      #pageOverlay {
+        position: fixed;
+        top:0; left:0;
+        width: 100vw;
+        height: 100vh;
+        background: #fff;
+        z-index: 999999;
+        pointer-events: none;
+        opacity: 1;
+        transition: opacity 0.3s ease-out;
+      }
+      #pageOverlay.fade-out {
+        opacity: 0;
+      }
       .welcome-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -79,7 +106,11 @@ if (!$conn->connect_error) {
     </style>
 </head>
 
-<body style="display: flex; flex-direction: column; min-height: 100vh;">
+<body style="display:none; flex-direction: column; min-height:100vh;">  
+
+<!-- Page Overlay -->
+<div id="pageOverlay"></div>
+
 <!-- Welcome Popout Modal -->
 <div id="welcomeOverlay" class="welcome-overlay">
   <div class="welcome-modal">
@@ -153,21 +184,24 @@ if (!$conn->connect_error) {
 
 <?php include 'COMPONENTS/footer.php'; ?>
 
-
 <!-- Scroll-to-top button (appears when page is scrolled past 50%) -->
 <button id="scrollTopBtn" class="scroll-btn" aria-label="Scroll to top">
   <i class="bi bi-arrow-up text-white fs-5"></i>
 </button>
 
 
-
-
-
-
-
 <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
 crossorigin="anonymous"></script>
+
+
+<script>
+// Fade out page overlay and reveal body immediately
+const overlay = document.getElementById('pageOverlay');
+document.body.style.display = "flex"; // show body
+overlay.classList.add('fade-out');
+setTimeout(() => overlay.remove(), 300);
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -227,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
-
 
 </body> 
 </html>

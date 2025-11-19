@@ -11,9 +11,8 @@
 
 
 <!--START HERE-->
-<section class="login bg-light">
-  <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="container-login shadow">
+<section class="login">
+    <div class="container-reg py-5 shadow">
       <div class="card login-panel shadow" style="width: 100%;">
             <h3 class="text-center mb-4">Register</h3>
             <form action="register.php" method="POST">
@@ -70,61 +69,7 @@
 </section>
 
 
-<!-- Footer -->
- <!-- Footer Section -->
-<footer class="footer bg-dark text-white py-5">
-
-  <!-- Top Columns: Centered -->
-  <div class="container mb-4">
-    <div class="row justify-content-center text-center text-md-start">
-      
-      <!-- Column 1: Products -->
-      <div class="col-md-3 mb-4">
-        <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
-        <ul class="list-unstyled">
-          <li><a href="products.html" class="footer-link">Attendance Device</a></li>
-          <li><a href="cctv.html" class="footer-link">CCTV Device</a></li>
-          <li><a href="accessdevice.html" class="footer-link">Access Panel</a></li>
-        </ul>
-      </div>
-
-      <!-- Column 2: About Us -->
-      <div class="col-md-3 mb-4">
-        <h5 class="fw-bold text-uppercase mb-3 footer-title">About Us</h5>
-        <ul class="list-unstyled">
-          <li><a href="about.html" class="footer-link">Introduction</a></li>
-          <li><a href="contact.html" class="footer-link">Contact Us</a></li>
-          <li><a href="terms.html" class="footer-link">Terms of Use</a></li>
-          <li><a href="privacy.html" class="footer-link">Privacy Policy</a></li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-
-  <hr class="border-secondary">
-
-  <!-- Bottom Row: Full Width -->
-  <div class="container-fluid px-5">
-    <div class="row align-items-center justify-content-between text-center text-md-start">
-      
-      <!-- Brand on left -->
-      <div class="col-md-6 d-flex justify-content-md-start justify-content-center mb-3 mb-md-0">
-        <h5 class="fw-bold footer-brand">DAHUA: <span class="text-danger">Timetrack</span></h5>
-      </div>
-
-      <!-- Social Media on right -->
-      <div class="col-md-6 d-flex justify-content-md-end justify-content-center">
-        <a href="https://www.facebook.com/DahuaHQ/" class="text-white me-3 social-link"><i class="bi bi-facebook"></i></a>
-        <a href="https://www.instagram.com/dahua_malaysia/" class="text-white me-3 social-link"><i class="bi bi-instagram"></i></a>
-        <a href="https://www.linkedin.com/company/dahua-technology" class="text-white me-3 social-link"><i class="bi bi-linkedin"></i></a>
-        <a href="https://www.youtube.com/user/DahuaTechnology" class="text-white social-link"><i class="bi bi-youtube"></i></a>
-      </div>
-
-    </div>
-  </div>
-
-</footer>
+<?php include 'COMPONENTS/footer.php'; ?>
 
 
 <!-- Scroll-to-top button (appears when page is scrolled past 50%) -->

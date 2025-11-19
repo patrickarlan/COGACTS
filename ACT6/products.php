@@ -5,12 +5,62 @@ if (!isset($_SESSION['user_id'])) {
   showNeedToSignPopup();
   exit;
 }
+
+// If not logged in, redirect immediately
+if (!isset($_SESSION['user_id'])) {
+    header("Location: logsign.php");
+    exit();
+}
+
+// Prevent caching
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+// Fetch user data
+$username = $_SESSION['username'] ?? 'User';
+$email = '';
+$conn = new mysqli("localhost", "root", "", "cogact");
+if (!$conn->connect_error) {
+    $stmt = $conn->prepare("SELECT email FROM users WHERE id=?");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $email = $row['email'];
+    }
+    $conn->close();
+}
 ?>
 
 <!doctype html>
 <html lang="en">
+  <head>
+        <!-- Inline JS to prevent flash if logged out -->
+    <script>
+    if (!<?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>) {
+        window.location.replace("logsign.php");
+    }
+    </script>
 
-<?php include 'COMPONENTS/head.php'; ?>
+    <!-- BFCache / back button protection -->
+    <script>
+    window.addEventListener("pageshow", function(event) {
+        if (event.persisted || (performance.getEntriesByType("navigation")[0].type === "back_forward")) {
+            window.location.replace("logsign.php");
+        }
+    });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAHUA: TERMS OF USE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
+    <link rel="stylesheet" href="style.css?v=20251118-1">
+  </head>
 
 <body>
 <?php include 'COMPONENTS/header.php'; ?>

@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Prevent caching
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+// If already logged in, redirect to dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: userdash.php");
+    exit();
+}
+
+
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $conn = new mysqli("localhost", "root", "", "cogact");
@@ -54,9 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include 'COMPONENTS/header.php'; ?>
 
 
-<!--START HERE-->
-<section class="login bg-light">
-  <div class="container d-flex justify-content-center align-items-center min-vh-100">
+<section class="login">
     <div class="container-login shadow">
       <div class="card login-panel shadow" style="width: 100%;">
             <h3 class="text-center mb-4">Login</h3>
@@ -80,20 +91,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </div>
               <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
-                <button type="button" class="btn btn-outline-primary w-100" style="padding: 1rem 0; font-size: 1.25rem;" onclick="window.location.href='register.php'">Register</button>
+                <button type="button" class="btn-register btn btn-outline-primary w-100" onclick="window.location.href='register.php'">Register</button>
               </div>
           </form>
       </div>
+
+      <!-- ALERT: move outside of .login-panel -->
       <?php if ($message): ?>
-        <?php if ($message === 'Login successful!'): ?>
-          <div class="alert alert-success mt-3 text-center">Login successful!</div>
-        <?php else: ?>
-          <div class="alert alert-danger mt-3 text-center"><?php echo $message; ?></div>
-        <?php endif; ?>
+        <div class="alert-container  mt-3">
+          <?php if ($message === 'Login successful!'): ?>
+            <div class="alert alert-success text-center">Login successful!</div>
+          <?php else: ?>
+            <div class="alert alert-danger text-center"><?php echo $message; ?></div>
+          <?php endif; ?>
+        </div>
       <?php endif; ?>
-      </div> 
-    </div>
-  </section>
+
+    </div> 
+</section>
+
   
 <?php include 'COMPONENTS/footer.php'; ?>
 

@@ -8,9 +8,9 @@
       <div class="col-md-3 mb-4 text-center">
         <h5 class="fw-bold text-uppercase mb-3 footer-title">Products</h5>
         <ul class="list-unstyled">
-          <li><a href="products.php" class="footer-link">Attendance Device</a></li>
-          <li><a href="cctv.php" class="footer-link">CCTV Device</a></li>
-          <li><a href="accessdevice.php" class="footer-link">Access Panel</a></li>
+          <li><a href="attendancedevice.php" class="footer-link">ASA1222G</a></li>
+          <li><a href="attendance2.php" class="footer-link">ASA1222E-S</a></li>
+          <li><a href="attendance3.php" class="footer-link">ASA1222E</a></li>
         </ul>
       </div>
 

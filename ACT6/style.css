@@ -1,37 +1,3 @@
-@media (max-width: 992px) {
-  .hover-panel {
-    position: static;
-    top: auto;
-    left: auto;
-    width: 100%;
-    box-shadow: none;
-    border-radius: 0;
-    margin-top: 0.5rem;
-    display: none;
-    z-index: auto;
-  }
-  .hover-panel.show {
-    display: block;
-  }
-  .dropdown-toggle-icon {
-    margin-left: auto;
-    margin-right: 0;
-    font-size: 1.1em;
-    vertical-align: middle;
-    cursor: pointer;
-    display: inline-block;
-  }
-}
-@media (max-width: 992px) {
-  .custom-nav .nav-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 0 10px !important;
-    margin-right: 0 !important;
-    margin-left: 0 !important;
-  }
-}
 /* Remove white space below footer for desktop */
 @media (min-width: 992px) {
   body {
@@ -45,65 +11,6 @@
   }
   main, .dashboard-section {
     flex: 1 0 auto;
-  }
-}
-/* LOGIN FORM ERROR STYLES (match register) */
-.login-control.error {
-  border: 2px solid #dc3545 !important;
-  background: #fff6f6 !important;
-}
-.login-control.error + .error-tooltip {
-  display: flex;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-.login-control.error:focus + .error-tooltip,
-.login-control.error:hover + .error-tooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-@media (max-width: 992px) {
-  .login-panel {
-    padding: 2rem 1.5rem;
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
-  .container-login {
-    padding: 2rem 0.5rem;
-  }
-  .login-control {
-    font-size: 1.1rem;
-    padding: 1rem 1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .login-panel {
-    padding: 1rem 0.5rem;
-    width: 100%;
-    min-width: 0;
-    border-radius: 10px;
-  }
-  .container-login {
-    padding: 0.5rem;
-  }
-  .login-control {
-    font-size: 1rem;
-    padding: 0.75rem 0.75rem;
-  }
-  .btn {
-    font-size: 1rem;
-    padding: 0.75rem 0;
-  }
-  .error-tooltip {
-    font-size: 0.9rem;
-    min-width: 140px;
-    max-width: 90vw;
-    padding: 0.4rem 0.7rem 0.4rem 1.2rem;
-    left: 0;
   }
 }
 
@@ -148,6 +55,7 @@ section:last-of-type {
   filter: brightxess(0) invert(1); /* makes it white on dark bg */
   padding-left: 10px; /* spacing between text and logo */
   transition: transform 0.3s ease;
+  margin: auto;
 }
 
 .navbar-brand:hover .navbar-logo {
@@ -166,7 +74,6 @@ section:last-of-type {
 }
 
 /* Navigation Bar Customization */
-
 .navbar {
   padding: 1rem 3rem;
 }
@@ -174,13 +81,36 @@ section:last-of-type {
 .navbar .container-fluid {
   padding-left: 1rem;
   padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  /* layout: brand | centered nav | icons */
 }
 
+.icon-container {
+  display: flex;
+  flex-direction: column; /* stack children vertically */
+  align-items: center;
+  margin-left: 150px; /* overridden by flex layout; kept for mobile */
+  flex: 0 0 auto;
+}
+
+.icons {
+  gap: 2rem !important;
+  right: 40px;
+}
+.custom-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center nav items in the header */
+  gap: 5rem; /* consistent spacing */
+  flex: 1; /* grow to take available space and allow centering */
+}
 
 .custom-nav .nav-link {
-  margin: 0 20px;
-  margin-right: 120px;
-  margin-left: -70px;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  position: relative;
 }
 
 .nav-hover {
@@ -203,6 +133,35 @@ section:last-of-type {
     color: #ff0019 !important;  /* Dahua red */
 }
 
+/* On smaller screens revert to stacked behavior */
+@media (max-width: 992px) {
+  .navbar .container-fluid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .custom-nav {
+    display: block;
+    width: 100%;
+  }
+  .icon-container {
+    margin-left: 0;
+  }
+  .icons {
+    gap: 2rem !important;
+    left: 5px;
+  }
+  .navbar-brand {
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+
 /*Hover panel-------------------------------------------------------------------------------*/
 
 .hover-panel-parent {
@@ -212,25 +171,25 @@ section:last-of-type {
 .hover-panel {
   position: absolute;
   top: 100%;
-  left: 0;
-  width: 250px; /* ✅ increase this value to fit your text */
+  left: 50%;
+  min-width: 200px;
+  width: auto;
   display: none;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(5px);
-  transition: all 0.25s ease;
+  transform: translate(-50%, 5px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
   background-color: #212529;
   border-radius: 0 0 8px 8px;
   z-index: 1000;
 }
 
-/* Show panel on hover */
+/* Show panel on hover - center under parent */
 .hover-panel-parent:hover .hover-panel {
   display: block;
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
-  left: -70px;
+  transform: translate(-50%, 0);
 }
 
 /* Item styles */
@@ -249,10 +208,55 @@ section:last-of-type {
   position: relative;
 }
 
+@media (max-width: 992px) {
+  .hover-panel {
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.5rem 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 0 8px 8px !important;
+    z-index: 1000 !important;
+    display: none; /* remain hidden until `.show` */
+  }
 
+  .hover-panel .dropdown-item {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .hover-panel.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  .dropdown-toggle-icon {
+    margin-left: auto;
+    margin-right: 0;
+    font-size: 1.1em;
+    vertical-align: middle;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .custom-nav .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 10px !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+}
 
 
 /* --- Search Panel-------------------------------------------------------------------------*/
+
 .search-container {
   position: relative;
 }
@@ -260,14 +264,16 @@ section:last-of-type {
 .search-panel {
   display: none;
   position: absolute;
-  top: 120%;
-  right: 0;
+  top: 100%;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
   width: 250px;
   background-color: #212529;
   border-radius: 8px;
-  z-index: 1000;
+  z-index: 1100;
   padding: 1rem;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 /* Position the search panel right below the icon */
@@ -279,10 +285,12 @@ section:last-of-type {
   display: none; /* hidden by default */
   position: absolute;
   top: 100%; /* appear below the icon */
-  right: 0;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
   width: 250px;
-  z-index: 1050; /* keep above navbar */
-  transition: all 0.3s ease;
+  z-index: 1100; /* keep above navbar */
+  transition: all 0.25s ease;
 }
 
 /* When hovering over icon or panel, show it */
@@ -309,6 +317,23 @@ section:last-of-type {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+@media (max-width: 527px) {
+  .search-panel {
+    right: auto;
+    left: 0;
+  }
+  .search-panel {
+    width: 50vw;
+    min-width: 0;
+    max-width: 360px;
+    padding: 0.5rem 0.5rem;
+    box-sizing: border-box;
+    border-radius: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
 
 /* --- Profile Panel------------------------------------------------------------------------*/
 .profile-container {
@@ -319,12 +344,14 @@ section:last-of-type {
   display: none;
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
   width: 180px;
   background-color: #212529;
   border-radius: 8px;
-  z-index: 1000;
-  transition: all 1s ease;
+  z-index: 1100;
+  transition: all 0.25s ease;
 }
 
 .profile-container:hover .profile-panel {
@@ -333,6 +360,23 @@ section:last-of-type {
 
 .profile-panel .dropdown-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 527px) {
+  .profile-panel {
+    right: auto;
+    left: 0;
+  }
+  .profile-panel {
+    width: 50vw;
+    min-width: 0;
+    max-width: 360px;
+    padding: 0.5rem 0.5rem;
+    box-sizing: border-box;
+    border-radius: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 
@@ -946,13 +990,14 @@ section.privacy-section {
   }
 }
 
-  .login-panel {
+ /* .login-panel {
      background: #fff;
      border-radius: 12px;
      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
      border: 1px solid #e0e0e0;
      padding: 2rem;
-  }
+  }*/
+
 /* Product overview panel styling */
 .product-panel {
   background: #fff;
@@ -1044,24 +1089,42 @@ section.privacy-section {
 
 /* Login Panel Styles */
 .container-login {
-    padding: 10rem;
-    background-color: #ffffff !important;
-    border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column; /* stack children vertically */
+  align-items: center;
+  min-height: 80vh;
+  background-color: #ffffff !important;
+  border-radius: 12px;
+  margin: 2rem auto !important;
+  padding: 5rem 5rem !important;
+  box-sizing: border-box;
+  max-width: 600px;
 }
 
 .login-panel {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-    border: 1px solid #e0e0e0;
-    padding: 4rem 7rem;
-    max-width: 900px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  border: 1px solid #e0e0e0;
+  padding: 2rem 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .login-panel h3 {
     color: #007bff;
     font-weight: 600;
 }
+
+/* alert container default */
+.alert-container .alert {
+    width: 100%;
+    max-width: 340px;
+    box-sizing: border-box;
+    text-align: center;
+  }
 
 .login-panel .form-control {
     border-radius: 10px;
@@ -1093,6 +1156,155 @@ section.privacy-section {
     box-shadow: 0 4px 16px rgba(0,123,255,0.15);
     transform: translateY(-2px) scale(1.03);
 }
+
+/* Register button: match Login button sizing */
+.btn-register {
+  padding: 1rem 0;
+  font-size: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+.btn-register.btn-outline-primary {
+  border-width: 1px;
+}
+
+/* LOGIN FORM ERROR STYLES (match register) */
+.login-control.error {
+  border: 2px solid #dc3545 !important;
+  background: #fff6f6 !important;
+}
+.login-control.error + .error-tooltip {
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.login-control.error:focus + .error-tooltip,
+.login-control.error:hover + .error-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 992px) {
+   .container-login {
+    display: flex;
+    flex-direction: column; /* stack children vertically */
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: #ffffff !important;
+    border-radius: 12px;
+    margin: 2rem auto !important;
+    padding: 5rem 5rem !important;
+    box-sizing: border-box;
+    max-width: 600px;
+  }
+  .login-panel {
+    padding: 2rem 1.5rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .container-login {
+    padding: 2rem 0.5rem;
+  }
+  .login-control {
+    font-size: 1.1rem;
+    padding: 1rem 1rem;
+  }
+
+  .alert-container {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .alert-container .alert {
+    width: 100%;
+    max-width: 340px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .container-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: #ffffff !important;
+    border-radius: 12px;
+    margin: 2rem auto !important;
+    padding: 3rem 3rem !important;
+    box-sizing: border-box;
+    max-width: 600px;
+
+  }
+  .login-panel {
+    padding: 2rem 1rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .login-panel h3 {
+    font-size: 1.3rem;
+  }
+  .login-panel .form-control {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+  .login-panel .btn-register .btn-primary {
+    font-size: 1rem;
+    padding: 0.75rem 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-panel {
+    padding: 2rem 1.5rem !important;
+    width: 80% !important;
+    min-width: 60px !important;
+    box-sizing: border-box;
+  }
+  .container-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    background-color: #ffffff !important;
+    border-radius: 12px;
+    margin: 2rem auto !important;
+    padding: 1.5rem 0.5rem !important;
+    box-sizing: border-box;
+    max-width: 400px;
+  }
+  .login-control {
+    font-size: 1rem;
+    padding: 0.75rem 0.75rem;
+  }
+  .btn {
+    font-size: 1rem;
+    padding: 0.75rem 0;
+  }
+
+  .btn-register {
+    font-size: 1rem;
+    padding: 0.5rem 0 !important;
+  }
+  .error-tooltip {
+    font-size: 0.9rem;
+    min-width: 140px;
+    max-width: 90vw;
+    padding: 0.4rem 0.7rem 0.4rem 1.2rem;
+    left: 0;
+  }
+}
+
 .form-check-input.error {
   border: 2px solid #dc3545 !important;
   box-shadow: 0 0 0 2px #dc3545 !important;
@@ -1273,17 +1485,18 @@ section.privacy-section {
   padding-left: 0.25rem;
 }
 /* Register Panel Styles */
-.register-panel {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-  border: 1px solid #e0e0e0;
-  padding: 4rem 5rem;
-  width: 550px;
-  max-width: 100%;
-  min-width: 400px;
-  margin: 0 auto;
-  overflow: visible;
+.container-reg {
+  display: flex;
+  justify-content: center;
+  flex-direction: column; /* stack children vertically */
+  align-items: center;
+  min-height: 80vh;
+  background-color: #ffffff !important;
+  border-radius: 12px;
+  margin: 2rem auto !important;
+  padding: 5rem 0.5rem !important;
+  box-sizing: border-box;
+  max-width: 600px;
 }
 
 @media (max-width: 992px) {
@@ -1293,12 +1506,16 @@ section.privacy-section {
     min-width: 0;
     box-sizing: border-box;
   }
-  .container-login {
-    padding: 2rem 0.5rem;
+  .container-reg {
+    padding: 2rem 5rem;
   }
   .register-control {
     font-size: 1.1rem;
     padding: 1rem 1rem;
+  }
+
+  .alert {
+    font-size: 1rem !important;
   }
 }
 
@@ -1361,22 +1578,6 @@ section.privacy-section {
   box-shadow: 0 4px 16px rgba(40,167,69,0.15);
   transform: translateY(-2px) scale(1.03);
 }
-@media (max-width: 992px) {
-  .custom-nav .nav-item {
-    width: 100%;
-  }
-  .hover-panel {
-    position: static !important;
-    width: 100% !important;
-    left: unset !important;
-    top: unset !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    margin-top: 0 !important;
-    z-index: auto !important;
-  }
-}
-
 
 
 

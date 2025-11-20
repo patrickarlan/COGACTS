@@ -16,3 +16,8 @@ function showNeedToSignPopup() {
   echo '</div>';
 }
 ?>
+
+<!doctype html>
+<html lang="en">
+<?php include 'COMPONENTS/head.php'; ?>
+</html>

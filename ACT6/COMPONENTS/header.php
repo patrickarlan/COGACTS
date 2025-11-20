@@ -87,7 +87,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <?php if (isset($_SESSION['user_id'])): ?>
               <a href="COMPONENTS/logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
             <?php else: ?>
-              <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
+              <a href="logsign.php" class="dropdown-item text-white text-center py-2">Sign In</a>
             <?php endif; ?>
           </div>
         </div>

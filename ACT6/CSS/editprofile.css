@@ -1,0 +1,102 @@
+.edit-container {
+    width: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 80vh    !important;
+    padding: 2rem !important;
+    margin: 5rem !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 100px rgba(0, 0, 0, 0.1) !important;
+    background-color: rgb(255, 251, 246) !important;
+}
+
+.edit-panel {
+    width: 100% !important;
+    max-width: 600px !important;
+    padding: 2rem !important;
+    border-radius: 10px !important;
+    background-color: #fff !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.com-logo {
+    width: 150px !important;
+    margin-bottom: 1.5rem !important;
+         
+}
+
+/* Hover + click affordance for the company logo */
+.com-logo-link {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+.com-logo {
+    display: block;
+    width: 150px;
+    max-width: 40%;
+    margin: 0;
+    transition: transform 220ms ease, box-shadow 220ms ease;
+    cursor: pointer;
+}
+.com-logo:hover {
+    transform: scale(1.06);
+}
+
+/* container — keep gap & center */
+.btn-prof {
+  display: flex;
+  justify-content: center;
+  gap: 2rem !important;
+}
+
+/* buttons — prepare smooth transform + shadow */
+.btn-prof .btn {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* hover: slight zoom + soft shadow */
+.btn-prof .btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* optional: small press feedback */
+.btn-prof .btn:active {
+  transform: scale(1.02);
+}
+
+/* Keep outline button transparent on hover and add a side shadow + lift */
+.btn-prof .btn.btn-outline-secondary {
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 120ms ease;
+}
+.btn-prof .btn.btn-outline-secondary:hover,
+.btn-prof .btn.btn-outline-secondary:focus {
+  background-color: transparent !important; /* prevent Bootstrap fill */
+  color: inherit !important; /* keep text color */
+  border-color: rgba(108,117,125,0.9) !important; /* keep border visible */
+  box-shadow: 8px 0 24px rgba(0,0,0,0.12) !important; /* side shadow */
+  transform: scale(1.02);
+}
+.btn-prof .btn.btn-outline-secondary:active {
+  transform: scale(1.02);
+}
+
+/* Page overlay used for a quick white fade-out on page load */
+#pageOverlay.page-overlay {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 99999;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+#pageOverlay.page-overlay.fade-out {
+  opacity: 0;
+}

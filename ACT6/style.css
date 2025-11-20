@@ -347,11 +347,11 @@ section:last-of-type {
   left: 50%;
   right: auto;
   transform: translateX(-50%);
-  width: 180px;
+  width: 100px !important;
   background-color: #212529;
   border-radius: 8px;
   z-index: 1100;
-  transition: all 0.25s ease;
+  transition: all 0.25s ease
 }
 
 .profile-container:hover .profile-panel {
@@ -366,8 +366,7 @@ section:last-of-type {
   .profile-panel {
     right: auto;
     left: 0;
-  }
-  .profile-panel {
+
     width: 50vw;
     min-width: 0;
     max-width: 360px;

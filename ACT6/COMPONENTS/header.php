@@ -1,8 +1,14 @@
 <?php
+// Prevent Chrome BFCache
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 ?>
+
 <!-- Header/Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4 px-0">
   <div class="container-fluid">
@@ -50,8 +56,9 @@ if (session_status() === PHP_SESSION_NONE) {
         </li>
       </ul>
 
+    <div class="icon-container">
       <!-- Icons (Search & Profile) -->
-      <div class="d-flex align-items-center position-relative">
+      <div class="icons d-flex align-items-center position-relative">
 
                 <!-- 🔍 Search Icon (Hover-based) -->
                 <div class="search-container position-relative me-3">
@@ -78,17 +85,32 @@ if (session_status() === PHP_SESSION_NONE) {
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
             <?php if (isset($_SESSION['user_id'])): ?>
-              <a href="logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
+              <a href="COMPONENTS/logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
             <?php else: ?>
               <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
             <?php endif; ?>
           </div>
         </div>
       </div>
-
+    </div>  
     </div>
   </div>
 </nav>
+
+<script>
+  document.addEventListener('click', function(event) {
+  // Replace '.hover-panel.show' with your actual open menu selector
+  const openPanels = document.querySelectorAll('.hover-panel.show');
+  openPanels.forEach(panel => {
+    if (!panel.contains(event.target) && !event.target.closest('.hover-panel-parent')) {
+      panel.classList.remove('show');
+      // reset aria-expanded on the toggle icon if present
+      var icon = panel.parentElement.querySelector('.dropdown-toggle-icon');
+      if (icon) icon.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -101,30 +123,25 @@ document.addEventListener('DOMContentLoaded', function() {
     var icon = parent.querySelector('.dropdown-toggle-icon');
     if (icon) {
       icon.addEventListener('click', function(e) {
+        // prevent the anchor navigation when tapping the chevron
+        e.stopPropagation();
         e.preventDefault();
         if (isMobile()) {
-          // Close other panels
+          // Close other panels and reset their toggle states
           document.querySelectorAll('.hover-panel.show').forEach(function(otherPanel) {
             if (otherPanel !== panel) {
               otherPanel.classList.remove('show');
+              var otherIcon = otherPanel.parentElement.querySelector('.dropdown-toggle-icon');
+              if (otherIcon) otherIcon.setAttribute('aria-expanded', 'false');
             }
           });
           panel.classList.toggle('show');
+          // update aria-expanded on this icon
+          icon.setAttribute('aria-expanded', panel.classList.contains('show') ? 'true' : 'false');
         }
       });
     }
-    link.addEventListener('click', function(e) {
-      if (isMobile()) {
-        e.preventDefault();
-        // Close other panels
-        document.querySelectorAll('.hover-panel.show').forEach(function(otherPanel) {
-          if (otherPanel !== panel) {
-            otherPanel.classList.remove('show');
-          }
-        });
-        panel.classList.toggle('show');
-      }
-    });
+    // NOTE: do not intercept link clicks — anchor text should navigate normally.
   });
   window.addEventListener('resize', function() {
     if (!isMobile()) {

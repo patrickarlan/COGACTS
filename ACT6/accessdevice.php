@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-
+  
+<?php include 'COMPONENTS/requireLogin.php'; ?>
 <?php include 'COMPONENTS/head.php'; ?>
 
 <body>

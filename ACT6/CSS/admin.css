@@ -1,0 +1,83 @@
+/* Basic admin styles for admin.php */
+body.admin-page {
+	background: #f6f8fb;
+	color: #223;
+	font-family: Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+.admin-topbar{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:12px;
+	padding:18px 22px;
+	background: linear-gradient(90deg,#0d6efd,#6610f2);
+	color:#fff;
+	border-radius:8px;
+	box-shadow:0 6px 20px rgba(13,110,253,0.12);
+	margin-bottom:18px;
+}
+.admin-topbar h1{font-size:1.25rem;margin:0;font-weight:600}
+.admin-topbar .lead{opacity:0.95;font-weight:400}
+
+.admin-panel{background:#fff;padding:18px;border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,0.06)}
+.create form .form-control{min-height:42px}
+.table thead th{background:#f3f6fb}
+.table tbody tr td{vertical-align:middle}
+.action-btns .btn{margin-right:6px}
+
+.btn-primary.custom{background:#0b5ed7;border-color:#0b5ed7}
+.btn-outline-primary.custom{border-color:#0b5ed7;color:#0b5ed7}
+
+@media (max-width:900px){
+	.admin-topbar{flex-direction:column;align-items:flex-start}
+	.create .row > div {flex:0 0 100%;max-width:100%}
+}
+
+/* Floating create modal */
+.modal-overlay{
+	position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:15000;
+	background:rgba(0,0,0,0.35);
+	backdrop-filter: blur(2px);
+}
+.modal-overlay.show{display:flex}
+.modal-panel{
+	background:#fff;border-radius:12px;padding:20px;max-width:820px;width:95%;box-shadow:0 20px 60px rgba(2,6,23,0.35);
+	transform:translateY(-8px);transition:transform .18s ease,opacity .18s ease;opacity:1;
+}
+.modal-panel.hide{opacity:0;transform:translateY(8px)}
+.blurred{filter:blur(6px);transition:filter .18s ease}
+
+/* responsive adjustments for modal form inputs */
+@media (max-width:900px){
+	.modal-panel .row > div {flex:0 0 100%;max-width:100%}
+}
+
+/* form labels inside modal (label above field) */
+.modal-panel .form-label{display:block;font-size:0.85rem;color:#3a3a3a;margin-bottom:6px}
+.modal-panel .form-control{min-height:40px}
+.modal-panel .input-short{max-width:240px}
+.modal-panel .row-short{display:flex;gap:12px;align-items:flex-start}
+.modal-panel .row-short .col{flex:1}
+
+/* Scrollable select for region */
+.modal-panel select.form-control[size] {
+	width:100%;
+	max-height:160px; /* visible rows will be governed by `size` attribute */
+	overflow-y:auto;
+}
+
+/* region picker */
+.region-picker-anchor{position:relative}
+.region-display{display:flex;gap:8px;align-items:center}
+.region-display .form-control[readonly]{background:#fff;cursor:pointer}
+.region-btn{background:#fff;border:1px solid #e6e9ef;padding:6px 8px;border-radius:6px;cursor:pointer}
+.region-dropdown{position:absolute;z-index:16000;top:calc(100% + 8px);left:0;right:0;max-width:520px;background:#fff;border-radius:10px;padding:10px;box-shadow:0 20px 50px rgba(2,6,23,0.12);display:none}
+.region-dropdown.show{display:block}
+.region-search{width:100%;padding:8px;border:1px solid #e6e9ef;border-radius:6px;margin-bottom:8px}
+.region-list{max-height:210px;overflow:auto}
+.region-item{padding:8px 10px;border-radius:6px;cursor:pointer}
+.region-item:hover{background:#f1f5ff}
+.region-item.selected{background:#e6f0ff}
+
+
+

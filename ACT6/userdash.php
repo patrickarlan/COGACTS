@@ -138,19 +138,19 @@ $showWelcome
 
 <!-- Second Header / Banner -->
 <main style="flex: 1 0 auto;">
-<div class="container-fluid p-0 bg-dark">
-  <div class="banner">
-    <img src="PICS/DAHUAcontact.png" alt="Banner Image" class="img-fluid">
+<div class="banner-panel">
+  <div class="banner-dash">
+    <img src="PICS/DAHUAcontact.png" alt="Bannerdash" class="banner-dash" style="width:100%; max-height:200px; object-fit:cover;" />
   </div>
 </div>
 
 <!--START HERE-->
-<section class="dashboard-section py-1 m0 bg-light">
-  <div class="dashboard-section container my-3 bg-light">
+<section class="dashboard-section py-1 m-5">
+  <div class="dashboard-section container my-3">
     <div class="row justify-content-center align-items-start">
       <!-- Profile Panel -->
       <div class="col-md-3 mb-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card-profile h-100" style="outline: #5353531a 0.5px solid; border-radius:3px; box-shadow: 0 4px 12px #5353531a; padding-bottom:30px;">
           <div class="card-header bg-dark text-white">
             <h5 class="mb-0">Profile</h5>
           </div>
@@ -167,7 +167,7 @@ $showWelcome
       </div>
       <!-- Favourite Panel -->
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card-fav h-100 shadow-sm" style="outline: #5353531a 0.5px solid; border-radius:3px; box-shadow: 0 4px 12px #5353531a; padding-bottom:20px;">
           <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Favourite Panel</h5>
           </div>
@@ -181,7 +181,7 @@ $showWelcome
       </div>
       <!-- Order Panel -->
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card-order h-100 shadow-sm" style="outline: #5353531a 0.5px solid; border-radius:3px; box-shadow: 0 4px 12px #5353531a; padding-bottom:20px;">
           <div class="card-header bg-success text-white">
             <h5 class="mb-0">Order Panel</h5>
           </div>

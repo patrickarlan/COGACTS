@@ -8,6 +8,14 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Determine whether to show the welcome popup on this login.
+// Use a server-side session flag so logging out/clearing the session will show it again on next login.
+$showWelcome = empty($_SESSION['welcome_shown']);
+if ($showWelcome) {
+  // mark it shown for subsequent requests in this session
+  $_SESSION['welcome_shown'] = 1;
+}
+
 // Prevent caching
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
 header("Pragma: no-cache");
@@ -48,22 +56,22 @@ if (!$conn->connect_error) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
     <link rel="stylesheet" href="style.css">
-    <style>
-          /* Optional fade-in overlay */
-      #pageOverlay {
-        position: fixed;
-        top:0; left:0;
-        width: 100vw;
-        height: 100vh;
-        background: #fff;
-        z-index: 999999;
-        pointer-events: none;
-        opacity: 1;
-        transition: opacity 0.3s ease-out;
-      }
-      #pageOverlay.fade-out {
-        opacity: 0;
-      }
+    <style>  /* Page overlay - ensures the white overlay can fade out on this page */
+    #pageOverlay.page-overlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 99999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+    /* Stronger override class — uses !important so it can't be defeated by other CSS rules */
+    #pageOverlay.inline-fade {
+      opacity: 0 !important;
+      transition: opacity 0.5s ease !important;
+      pointer-events: none !important;
+    }
       .welcome-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -104,21 +112,26 @@ if (!$conn->connect_error) {
         100% { transform: scale(1); opacity: 1; }
       }
     </style>
-</head>
+    </style>
+  </head>
 
-<body style="display:none; flex-direction: column; min-height:100vh;">  
+  <body style="flex-direction: column; min-height:100vh;">  
 
 <!-- Page Overlay -->
-<div id="pageOverlay"></div>
+<div id="pageOverlay" class="page-overlay" aria-hidden="true"></div>
 
-<!-- Welcome Popout Modal -->
-<div id="welcomeOverlay" class="welcome-overlay">
-  <div class="welcome-modal">
-    <h4 class="mb-3">Welcome to your Dashboard!</h4>
-    <p class="mb-4">We're glad to have you here. Explore your favourites and orders below.</p>
-    <button id="thankYouBtn" class="btn btn-success px-4">Thank You</button>
+<!-- Welcome Popout Modal (rendered only when server-side session requests it) -->
+<?php if (!empty(
+$showWelcome
+)) : ?>
+  <div id="welcomeOverlay" class="welcome-overlay">
+    <div class="welcome-modal">
+      <h4 class="mb-3">Welcome to your Dashboard!</h4>
+      <p class="mb-4">We're glad to have you here. Explore your favourites and orders below.</p>
+      <button id="thankYouBtn" class="btn btn-success px-4">Thank You</button>
+    </div>
   </div>
-</div>
+<?php endif; ?>
 
 <?php include 'COMPONENTS/header.php'; ?>
 
@@ -145,7 +158,10 @@ if (!$conn->connect_error) {
             <img src="PICS/DAHUAfavi.png" alt="Profile" class="rounded-circle mb-3" style="width:80px;height:80px;object-fit:cover;">
             <h6 class="mb-1"><?php echo htmlspecialchars($username); ?></h6>
             <p class="text-muted mb-2"><?php echo htmlspecialchars($email); ?></p>
-            <a href="#" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+            <a href="BACKEND/editprofile.php" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+            <div class="mt-2">
+              <a href="BACKEND/accountsettings.php" class="btn btn-outline-success btn-sm">Account Settings</a>
+            </div>
           </div>
         </div>
       </div>
@@ -196,28 +212,47 @@ crossorigin="anonymous"></script>
 
 
 <script>
-// Fade out page overlay and reveal body immediately
-const overlay = document.getElementById('pageOverlay');
-document.body.style.display = "flex"; // show body
-overlay.classList.add('fade-out');
-setTimeout(() => overlay.remove(), 300);
+  // Robust fade-out for the page overlay using an !important override class
+  document.addEventListener('DOMContentLoaded', function () {
+    var overlay = document.getElementById('pageOverlay');
+    if (!overlay) return;
+
+    // Small timeout so the overlay is visible for a moment
+    setTimeout(function () {
+      // Force a reflow so the browser notices the transition
+      // eslint-disable-next-line no-unused-expressions
+      overlay.offsetWidth;
+
+      // Add a class that uses !important to force the opacity transition
+      overlay.classList.add('inline-fade');
+
+      // Remove from DOM after transition completes (give 600ms to be safe)
+      setTimeout(function () {
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, 600);
+    }, 80);
+  });
 </script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const overlay = document.getElementById('welcomeOverlay');
   const btn = document.getElementById('thankYouBtn');
-  setTimeout(() => {
-    overlay.classList.add('show');
-  }, 300);
-  btn.addEventListener('click', function () {
-    overlay.classList.remove('show');
-    overlay.classList.add('hide');
-    setTimeout(() => {
-      overlay.classList.remove('hide');
-      overlay.style.display = 'none';
-    }, 400);
-  });
+  if (!overlay) return;
+
+  // Server controls whether the overlay exists on first login; simply show it when present
+  setTimeout(() => overlay.classList.add('show'), 300);
+
+  if (btn) {
+    btn.addEventListener('click', function () {
+      overlay.classList.remove('show');
+      overlay.classList.add('hide');
+      setTimeout(() => {
+        overlay.classList.remove('hide');
+        overlay.style.display = 'none';
+      }, 400);
+    });
+  }
 });
 </script>
 

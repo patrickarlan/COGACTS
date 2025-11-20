@@ -1,14 +1,14 @@
 .edit-container {
-    width: 50% !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    min-height: 80vh    !important;
-    padding: 2rem !important;
-    margin: 5rem !important;
-    border-radius: 10px !important;
-    box-shadow: 0 10px 100px rgba(0, 0, 0, 0.1) !important;
-    background-color: rgb(255, 251, 246) !important;
+  width: 50% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 90vh !important; /* reduced vertical height */
+  padding: 2rem 5rem !important; /* smaller top/bottom padding */
+  margin: 3rem auto !important; /* reduced vertical margin */
+  border-radius: 10px !important;
+  box-shadow: 0 10px 100px rgba(0, 0, 0, 0.1) !important;
+  background-color: rgb(255, 251, 246) !important;
 }
 
 .edit-panel {
@@ -99,4 +99,204 @@
 }
 #pageOverlay.page-overlay.fade-out {
   opacity: 0;
+}
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 992px) {
+  .edit-container {
+  width: 50% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 70vh !important; /* reduced vertical height */
+  padding: 2rem 3rem !important; /* smaller top/bottom padding */
+  margin: 3rem auto !important; /* reduced vertical margin */
+  border-radius: 10px !important;
+  box-shadow: 0 10px 100px rgba(0, 0, 0, 0.1) !important;
+  background-color: rgb(255, 251, 246) !important;
+}
+  }
+
+  .edit-panel {
+    padding: 1rem !important;
+    max-width: 100% !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+  }
+
+  .com-logo {
+    width: 120px !important;
+    max-width: 36% !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .btn-prof {
+    gap: 1rem !important;
+    flex-wrap: wrap;
+  }
+
+  .btn-prof .btn {
+    min-width: 110px;
+  }
+
+  .edit-panel .form-control {
+    font-size: 1rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+@media (max-width: 768px) {
+  .edit-container {
+    width: 70% !important;
+    padding: 2rem 2rem !important;
+    margin: 2rem auto !important;
+  }
+
+  .edit-panel {
+    padding: 1rem !important;
+  }
+
+  .com-logo {
+    width: 100px !important;
+    max-width: 32% !important;
+    margin-bottom: 0.7rem !important;
+  }
+}
+@media (max-width: 576px) {
+  .edit-container {
+    width: 90% !important; /* nearly full width on very small screens */
+    padding: 2rem 1rem !important;
+    margin: 1.5rem auto !important;
+  }
+
+  .edit-panel {
+    max-width: 100% !important;
+    padding: 0.5rem !important;
+  }
+
+  .com-logo {
+    width: 80px !important;
+    max-width: 30% !important;
+    margin-bottom: 0.6rem !important;
+  }
+}
+/* Floating error tooltip behavior specific to edit profile page (match register design) */
+.edit-panel .form-control.error + .error-tooltip,
+.edit-panel .form-control.form-control-sm.error + .error-tooltip {
+  /* place tooltip to the right of the input */
+  display: none;
+  position: absolute;
+  left: 100%; /* immediately to the right of the input */
+  top: 50%;
+  transform: translate(8px, -50%); /* small gap and vertical center */
+  min-width: 220px;
+  max-width: 380px;
+  pointer-events: none;
+  background: #fff8e1; /* register-like light panel */
+  color: #333; /* dark text */
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  font-size: 0.98rem;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.28s ease;
+}
+
+/* Show tooltip on hover/focus of the input or when parent has focus-within */
+.edit-panel .form-control.error:focus + .error-tooltip,
+.edit-panel .form-control.error:hover + .error-tooltip,
+.edit-panel .form-control.form-control-sm.error:focus + .error-tooltip,
+.edit-panel .form-control.form-control-sm.error:hover + .error-tooltip,
+.edit-panel .position-relative:hover .error-tooltip,
+.edit-panel .position-relative:focus-within .error-tooltip {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Icon inside tooltip (left-side) styled like register form */
+.edit-panel .error-tooltip .error-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff9800;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+/* Ensure tooltip text doesn't overlap the icon */
+.edit-panel .form-control.error + .error-tooltip { padding-left: 2.6rem; }
+.edit-panel .form-control.form-control-sm.error + .error-tooltip { padding-left: 2.6rem; }
+
+/* Arrow (triangle) matching the light panel */
+.edit-panel .form-control.error + .error-tooltip::after,
+.edit-panel .form-control.form-control-sm.error + .error-tooltip::after {
+  /* left-pointing triangle that points to the input */
+  content: '';
+  position: absolute;
+  left: -8px; /* sit at the left edge of the tooltip */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #fff8e1; /* triangle pointing left */
+}
+
+
+/* Additional responsive adjustments for mid-sized narrow viewports */
+@media (max-width: 719px) {
+  /* Prefer placing tooltip above the input and centered to avoid clipping */
+  .edit-panel .form-control.error + .error-tooltip,
+  .edit-panel .form-control.form-control-sm.error + .error-tooltip {
+    left: 50%;
+    top: -2.6rem;
+    transform: translateX(-50%);
+    min-width: 180px;
+    max-width: 92vw;
+    padding: 0.4rem 0.9rem 0.4rem 1.8rem;
+    font-size: 0.95rem;
+    z-index: 9999; /* make sure it floats above other elements */
+  }
+
+
+  /* Small responsive tweak so icon spacing shrinks on narrow screens */
+@media (max-width: 576px) {
+  /* on narrow screens keep tooltip above the input to avoid clipping */
+  .edit-panel .form-control.error + .error-tooltip,
+  .edit-panel .form-control.form-control-sm.error + .error-tooltip {
+    left: 2.2rem;
+    top: -2.6rem;
+    transform: none;
+    padding-left: 2.2rem;
+    min-width: 140px;
+  }
+  .edit-panel .error-tooltip .error-icon { font-size: 1rem; left: 0.6rem; }
+}
+  /* arrow becomes a down-pointing triangle centered under tooltip */
+  .edit-panel .form-control.error + .error-tooltip::after,
+  .edit-panel .form-control.form-control-sm.error + .error-tooltip::after {
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #fff8e1;
+    border-bottom: 0;
+  }
+
+  /* icon smaller and slightly closer */
+  .edit-panel .error-tooltip .error-icon {
+    font-size: 1rem;
+    left: 0.6rem;
+  }
+
+  /* If the page layout uses overflow:hidden on ancestors, increase z-index further */
+  .edit-panel .form-control.error + .error-tooltip { z-index: 2147483647; }
 }

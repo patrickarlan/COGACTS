@@ -9,6 +9,7 @@
     border-radius: 10px !important;
     box-shadow: 0 10px 100px rgba(0, 0, 0, 0.1) !important;
     background-color: rgb(255, 251, 246) !important;
+  transition: width 260ms ease, padding 260ms ease, margin 260ms ease, border-radius 260ms ease, box-shadow 260ms ease, background-color 260ms ease, min-height 260ms ease;
 }
 
 .editacc-panel {
@@ -18,6 +19,7 @@
     border-radius: 10px !important;
     background-color: #fff !important;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  transition: max-width 260ms ease, padding 260ms ease, border-radius 260ms ease, box-shadow 260ms ease;
 }
 
 .com-logo {
@@ -92,11 +94,89 @@
   position: fixed;
   inset: 0;
   background: #ffffff;
-  z-index: 99999;
+  /* keep page overlay behind modal/backdrop by using a low z-index */
+  z-index: 1000 !important;
   opacity: 1;
   transition: opacity 0.5s ease;
   pointer-events: none;
 }
 #pageOverlay.page-overlay.fade-out {
   opacity: 0;
+}
+
+/* Responsive: when viewport is small (mobile/tablet) make the panel attach to screen */
+@media (max-width: 800px) {
+  .editacc-container {
+    width: 100% !important;
+    padding: 1rem !important;
+    margin: 1rem !important;
+    min-height: 50vh !important;
+    border-radius: 0 !important;
+    box-shadow: 0 2px 5px #0000002f !important;
+  }
+
+  .editacc-panel {
+    max-width: none !important;
+    width: 90% !important;
+    padding: 1rem !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* subtle entrance animation: slide the panel up slightly when switching to mobile */
+  .editacc-panel {
+    transform: translateY(6px);
+    animation: panelUp 260ms ease forwards;
+  }
+  @keyframes panelUp {
+    from { transform: translateY(14px); opacity: 0.98; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .com-logo {
+    width: 120px !important;
+    max-width: 48% !important;
+  }
+
+  /* Buttons should stretch on small screens */
+  .btn-prof {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: stretch;
+  }
+  .btn-prof .btn { width: 100%; }
+
+  /* Make input groups fit full width and keep toggle button compact */
+  .input-group { width: 100%; }
+  .pwd-toggle { padding: 0.35rem 0.45rem; border-radius: 6px; }
+
+  /* Reduce margins for modal on mobile so it fills more of the screen */
+  .modal-dialog { margin: 0.5rem; }
+  .modal-content { border-radius: 8px; }
+
+  /* Center the modal on small screens only when visible */
+  .modal.show {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .modal.show .modal-dialog { margin: 0 !important; max-width: 540px; width: 100%; }
+
+  /* Make the modal backdrop lighter on small screens so the page doesn't go fully dark */
+  /* TEMP: remove dark backdrop on small screens for testing */
+    .modal-backdrop {
+      background-color: rgba(0,0,0,0.28) !important;
+      opacity: 1 !important;
+      display: block !important;
+      pointer-events: auto !important;
+    }
+  .modal-backdrop.show { opacity: 1 !important; }
+  /* Ensure modal is above the page overlay/backdrop on small screens */
+  .modal {
+    z-index: 200001 !important;
+  }
+  .modal-backdrop {
+    z-index: 200000 !important;
+  }
 }

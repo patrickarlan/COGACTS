@@ -1,8 +1,10 @@
 <?php
-// Prevent Chrome BFCache
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
-header("Pragma: no-cache");
-header("Expires: 0");
+// Prevent Chrome BFCache — only send headers if they haven't already been sent
+if (!headers_sent()) {
+  header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
+  header("Pragma: no-cache");
+  header("Expires: 0");
+}
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -79,7 +81,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <!-- 👤 Profile Icon -->
         <div class="profile-container position-relative">
-          <a href="userdash.php" class="nav-link nav-hover text-white profile-icon-link">
+              <?php /* Use server-side router to decide destination on click */ ?>
+              <a href="/COG3BACK/ACT6/profile.php" class="nav-link nav-hover text-white profile-icon-link">
             <i class="bi bi-person-circle"></i>
           </a>
           <!-- Profile Dropdown -->

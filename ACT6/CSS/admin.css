@@ -20,6 +20,9 @@ body.admin-page {
 .admin-topbar .lead{opacity:0.95;font-weight:400}
 
 .admin-panel{background:#fff;padding:18px;border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,0.06)}
+/* Table wrapper to contain large tables and allow both axis scrolling */
+.admin-table-wrap{width:100%;max-height:60vh;overflow:auto;border-radius:8px;padding-right:6px}
+.admin-table-wrap .table{margin-bottom:0}
 .create form .form-control{min-height:42px}
 .table thead th{background:#f3f6fb}
 .table tbody tr td{vertical-align:middle}
@@ -31,6 +34,54 @@ body.admin-page {
 @media (max-width:900px){
 	.admin-topbar{flex-direction:column;align-items:flex-start}
 	.create .row > div {flex:0 0 100%;max-width:100%}
+}
+
+/* Make the admin dashboard responsive for tablet/phone screens <= 1028px */
+@media (max-width:1028px){
+	.admin-topbar{flex-direction:column;align-items:flex-start;gap:8px;padding:14px}
+	.admin-topbar h1{font-size:1.05rem}
+	.admin-topbar .lead{font-size:0.95rem}
+
+	/* Make action buttons stack and become full-width */
+	.admin-topbar > div:nth-child(2) {width:100%;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+	.admin-topbar > div:nth-child(2) .btn{flex:0 0 auto}
+
+	/* Table: keep table inside the `.admin-table-wrap` and allow cells to wrap
+	   - Use a min-width so very wide tables still produce a horizontal scrollbar
+	   - Allow normal wrapping and breaking inside cells to avoid overlaying
+	*/
+	.admin-panel{padding:12px}
+	/* Increase minimum table width so content doesn't wrap into two lines on phones */
+	.admin-table-wrap .table{width:100%;min-width:1200px;border-collapse:collapse;-webkit-overflow-scrolling:touch}
+
+	/* Keep key columns on a single line to improve layout (ID, Username, Email, Name, Actions) */
+	.admin-table-wrap .table th:nth-child(-n+4),
+	.admin-table-wrap .table td:nth-child(-n+4),
+	.admin-table-wrap .table th:last-child,
+	.admin-table-wrap .table td:last-child{
+		white-space:nowrap!important;
+		overflow-wrap:normal!important;
+		word-break:normal!important;
+	}
+
+	/* Ensure action buttons display side-by-side */
+	.admin-table-wrap .table td:last-child a.btn,
+	.admin-table-wrap .table td:last-child form,
+	.admin-table-wrap .table td:last-child button{
+		display:inline-block;
+		margin-right:6px;
+		vertical-align:middle;
+	}
+
+	/* Reduce modal max width and make inputs stack */
+	.modal-panel{max-width:720px;width:96%}
+	.modal-panel .row > div{flex:0 0 100%;max-width:100%}
+
+	/* Region dropdown: make it full width under the input on small screens */
+	.region-dropdown{position:static;max-width:100%;margin-top:8px}
+
+	/* Tweak spacing for controls on smaller screens */
+	.modal-panel .input-short{max-width:100%}
 }
 
 /* Floating create modal */
@@ -78,6 +129,55 @@ body.admin-page {
 .region-item{padding:8px 10px;border-radius:6px;cursor:pointer}
 .region-item:hover{background:#f1f5ff}
 .region-item.selected{background:#e6f0ff}
+
+/* Desktop / default screen adjustments: increase container width and table column widths */
+@media (min-width:1029px){
+	/* widen the page container so the panel can be broader */
+	.admin-page .container{max-width:1600px;padding-left:20px;padding-right:20px}
+
+	/* give the panel more internal padding for breathing room */
+	.admin-panel{padding:28px}
+
+	/* allow the table to size to available space (avoid forcing horizontal scroll)
+	   when the viewport is wide enough, but still give sensible minimums for
+	   important columns so content stays readable
+	*/
+	.admin-table-wrap .table{min-width:0;table-layout:auto;width:100%}
+	/* username column (2nd), email column (3rd) and name (4th) get minimum widths */
+	.admin-table-wrap .table th:nth-child(2), .admin-table-wrap .table td:nth-child(2){min-width:180px}
+	.admin-table-wrap .table th:nth-child(3), .admin-table-wrap .table td:nth-child(3){min-width:300px}
+	.admin-table-wrap .table th:nth-child(4), .admin-table-wrap .table td:nth-child(4){min-width:200px}
+
+	/* actions column wider so buttons sit comfortably */
+	.admin-table-wrap .table th:last-child, .admin-table-wrap .table td:last-child{min-width:160px}
+	.admin-table-wrap .table td:last-child .btn{margin-right:8px}
+}
+
+/* Tablet breakpoint: show two form fields per row between 769px and 1028px */
+@media (min-width:769px) and (max-width:1028px) {
+	/* Target the inline edit form inside the admin panel - force two columns */
+	.admin-panel form.row.g-2{display:flex;flex-wrap:wrap;gap:12px}
+
+	/* Apply two-column sizing to any direct column children (override Bootstrap) */
+	.admin-panel form.row.g-2 > div[class*="col-"],
+	.admin-panel form.row.g-2 > div{flex:0 0 calc(50% - 12px) !important;max-width:calc(50% - 12px) !important;box-sizing:border-box}
+
+	/* Keep address (col-md-6) full width so it spans the row */
+	.admin-panel form.row.g-2 > .col-md-6{flex:0 0 100% !important;max-width:100% !important}
+
+	/* Ensure region picker layout stays inline: input grows, button stays small */
+	.admin-panel .region-display{display:flex;gap:8px;align-items:center}
+	.admin-panel .region-display input{flex:1;min-width:0}
+	.admin-panel .region-display .region-btn{flex:0 0 auto}
+
+	/* Reduce right padding on table wrapper so form fits better */
+	.admin-table-wrap{padding-right:4px}
+}
+
+/* Small and narrow screens: keep inputs stacked (single column) for <=768px to preserve original mobile layout */
+@media (max-width:768px){
+	.admin-panel form.row.g-2 > div{flex:0 0 100%;max-width:100%}
+}
 
 
 

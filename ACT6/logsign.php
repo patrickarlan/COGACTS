@@ -22,32 +22,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     $remember = isset($_POST['rememberMe']);
+    // Load protected admin config if present (server-side only)
+    $adminConfig = null;
+    $adminConfigPath = __DIR__ . '/config/admin.php';
+    if (file_exists($adminConfigPath)) {
+        $adminConfig = include $adminConfigPath; // returns ['username'=>..., 'password_hash'=>...]
+    }
     if ($username && $password) {
       $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
       $stmt->bind_param("s", $username);
       $stmt->execute();
       $result = $stmt->get_result();
-      if ($row = $result->fetch_assoc()) {
-        if (password_verify($password, $row['password'])) {
-                    // Set session variables for the logged-in user
-                    $_SESSION['user_id'] = $row['id'];
-                    $_SESSION['username'] = $row['username'];
-                    // Set cookies if remember me is checked
-                    if ($remember) {
+      $row = $result->fetch_assoc();
+
+      $loggedIn = false;
+      $isAdminLogin = false;
+
+        // Primary: check DB user
+        if ($row && password_verify($password, $row['password'])) {
+          $_SESSION['user_id'] = $row['id'];
+          $_SESSION['username'] = $row['username'];
+          // If the users table has a 'role' column, fetch and set it in session
+          $role = null;
+          $colRes = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
+          if ($colRes && $colRes->num_rows > 0) {
+            // fetch role for this user
+            $rstmt = $conn->prepare('SELECT role FROM users WHERE id=?');
+            $rstmt->bind_param('i', $row['id']);
+            $rstmt->execute();
+            $rres = $rstmt->get_result();
+            if ($rrow = $rres->fetch_assoc()) {
+              $role = $rrow['role'];
+              // normalize and store role as lowercase string
+              $_SESSION['role'] = is_string($role) ? strtolower(trim($role)) : $role;
+              if (is_string($role) && strtolower(trim($role)) === 'admin') {
+                $_SESSION['is_admin'] = 1;
+                $isAdminLogin = true;
+              }
+            }
+          }
+          $loggedIn = true;
+          // If this DB username matches the protected admin username and password also matches, mark admin
+          if ($adminConfig && ($row['username'] === ($adminConfig['username'] ?? '')) && password_verify($password, $adminConfig['password_hash'] ?? '')) {
+            $_SESSION['is_admin'] = 1;
+            $_SESSION['role'] = 'admin';
+            $isAdminLogin = true;
+          }
+      }
+
+      // Fallback: if no DB user matched, check protected admin config
+        if (!$loggedIn && $adminConfig && ($username === ($adminConfig['username'] ?? '')) && password_verify($password, $adminConfig['password_hash'] ?? '')) {
+          // Protected admin login (does not require a DB user). Assign a sentinel user_id=0.
+          $_SESSION['user_id'] = 0;
+          $_SESSION['username'] = $adminConfig['username'];
+          $_SESSION['is_admin'] = 1;
+          $_SESSION['role'] = 'admin';
+          $loggedIn = true;
+          $isAdminLogin = true;
+      }
+
+      if ($loggedIn) {
+                    // Set cookies if remember me is checked, but do NOT store admin password in cookie
+                    if ($remember && !$isAdminLogin) {
                       setcookie('remember_username', $username, time()+60*60*24*30, '/');
                       setcookie('remember_password', $password, time()+60*60*24*30, '/');
                     } else {
                       setcookie('remember_username', '', time()-3600, '/');
                       setcookie('remember_password', '', time()-3600, '/');
                     }
-                    // Redirect to user dashboard
-                    header('Location: userdash.php');
+                    // Redirect: admins -> admin panel, others -> user dashboard
+                    if (!empty($_SESSION['is_admin'])) {
+                        header('Location: BACKEND/admin.php');
+                    } else {
+                        header('Location: userdash.php');
+                    }
                     exit();
-        } else {
-           $message = "ERROR: Username or Password is incorrect";
-        }
       } else {
-          $message = "ERROR: Username or Password is incorrect";
+         $message = "ERROR: Username or Password is incorrect";
       }
     } else {
       $message = "All fields are required.";

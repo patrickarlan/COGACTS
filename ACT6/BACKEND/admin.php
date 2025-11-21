@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: TERMS OF USE</title>
+    <title>DAHUA: ADMIN DASHBOARD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -51,6 +51,11 @@ $regions = [
   'Middle East', 'Central America', 'Caribbean'
 ];
 
+// detect if `role` column exists in users table
+$roleColumnExists = false;
+$colRes = $mysqli->query("SHOW COLUMNS FROM users LIKE 'role'");
+if ($colRes && $colRes->num_rows > 0) $roleColumnExists = true;
+
 // Helper: validate CSRF for POST modifying actions
 function check_csrf(){
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,11 +80,17 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   $country = $_POST['country'] ?? null;
   $postal_id = $_POST['postal_id'] ?? null;
   $address = $_POST['address'] ?? null;
+  $role = $_POST['role'] ?? 'user';
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { $err = 'Invalid email'; }
   if (empty($err)) {
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $mysqli->prepare('INSERT INTO users (username,email,password,first_name,last_name,contact_number,region,country,postal_id,address) VALUES (?,?,?,?,?,?,?,?,?,?)');
-    $stmt->bind_param('ssssssssss',$username,$email,$hash,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address);
+    if ($roleColumnExists) {
+      $stmt = $mysqli->prepare('INSERT INTO users (username,email,password,first_name,last_name,contact_number,region,country,postal_id,address,role) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+      $stmt->bind_param('sssssssssss',$username,$email,$hash,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$role);
+    } else {
+      $stmt = $mysqli->prepare('INSERT INTO users (username,email,password,first_name,last_name,contact_number,region,country,postal_id,address) VALUES (?,?,?,?,?,?,?,?,?,?)');
+      $stmt->bind_param('ssssssssss',$username,$email,$hash,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address);
+    }
     if (!$stmt->execute()) $err = $stmt->error;
     else header('Location: admin.php');
     exit;
@@ -99,18 +110,40 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   $country = $_POST['country'] ?? null;
   $postal_id = $_POST['postal_id'] ?? null;
   $address = $_POST['address'] ?? null;
+  $role = $_POST['role'] ?? null;
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { $err = 'Invalid email'; }
   if (empty($err)) {
-    if (!empty($password)) {
+    $passwordProvided = !empty($password);
+    if ($passwordProvided) {
       $hash = password_hash($password, PASSWORD_DEFAULT);
-      $stmt = $mysqli->prepare('UPDATE users SET username=?, email=?, password=?, first_name=?, last_name=?, contact_number=?, region=?, country=?, postal_id=?, address=? WHERE id=?');
-      $stmt->bind_param('ssssssssssi',$username,$email,$hash,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$id);
+      if ($roleColumnExists && $role !== null) {
+        $stmt = $mysqli->prepare('UPDATE users SET username=?, email=?, password=?, first_name=?, last_name=?, contact_number=?, region=?, country=?, postal_id=?, address=?, role=? WHERE id=?');
+        $stmt->bind_param('sssssssssssi',$username,$email,$hash,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$role,$id);
+      } else {
+        $stmt = $mysqli->prepare('UPDATE users SET username=?, email=?, password=?, first_name=?, last_name=?, contact_number=?, region=?, country=?, postal_id=?, address=? WHERE id=?');
+        $stmt->bind_param('ssssssssssi',$username,$email,$hash,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$id);
+      }
     } else {
-      $stmt = $mysqli->prepare('UPDATE users SET username=?, email=?, first_name=?, last_name=?, contact_number=?, region=?, country=?, postal_id=?, address=? WHERE id=?');
-      $stmt->bind_param('sssssssssi',$username,$email,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$id);
+      if ($roleColumnExists && $role !== null) {
+        $stmt = $mysqli->prepare('UPDATE users SET username=?, email=?, first_name=?, last_name=?, contact_number=?, region=?, country=?, postal_id=?, address=?, role=? WHERE id=?');
+        $stmt->bind_param('ssssssssssi',$username,$email,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$role,$id);
+      } else {
+        $stmt = $mysqli->prepare('UPDATE users SET username=?, email=?, first_name=?, last_name=?, contact_number=?, region=?, country=?, postal_id=?, address=? WHERE id=?');
+        $stmt->bind_param('sssssssssi',$username,$email,$first_name,$last_name,$contact_number,$region,$country,$postal_id,$address,$id);
+      }
     }
     if (!$stmt->execute()) $err = $stmt->error;
-    else header('Location: admin.php');
+    else {
+      // If admin changed the password, set a flash message to show a floating notice
+      if (!empty($passwordProvided)) {
+        $_SESSION['admin_flash'] = [
+          'password_changed' => true,
+          'username' => $username,
+          'email' => $email
+        ];
+      }
+      header('Location: admin.php');
+    }
     exit;
   }
 }
@@ -146,7 +179,7 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <div>
       <button id="openCreateBtn" class="btn btn-light btn-sm">Create account</button>
       <a href="admin.php" class="btn btn-light btn-sm">Refresh</a>
-      <a href="../index.html" class="btn btn-outline-light btn-sm">Open site</a>
+      <a href="../index.php" class="btn btn-outline-light btn-sm">Open site</a>
     </div>
   </div>
   <div class="admin-panel" id="adminPanel">
@@ -154,11 +187,27 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php if (!empty($err)): ?><div class="alert alert-danger"><?php echo esc($err); ?></div><?php endif; ?>
 
   <h4>Existing users</h4>
+  <div class="admin-table-wrap">
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Name</th><th>Contact</th><th>Region</th><th>Country</th><th>Postal ID</th><th>Actions</th></tr></thead>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Region</th>
+        <th>Country</th>
+        <th>Postal ID</th>
+        <?php if ($roleColumnExists): ?><th>Role</th><?php endif; ?>
+        <th>Actions</th>
+      </tr>
+    </thead>
     <tbody>
     <?php
-      $res = $mysqli->query('SELECT id,username,email,first_name,last_name,contact_number,region,country,postal_id FROM users ORDER BY id DESC LIMIT 200');
+      $cols = 'id,username,email,first_name,last_name,contact_number,region,country,postal_id';
+      if ($roleColumnExists) $cols .= ',role';
+      $res = $mysqli->query('SELECT ' . $cols . ' FROM users ORDER BY id DESC LIMIT 200');
       while ($row = $res->fetch_assoc()):
     ?>
       <tr>
@@ -170,6 +219,7 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <td><?php echo esc($row['region']); ?></td>
         <td><?php echo esc($row['country']); ?></td>
         <td><?php echo esc($row['postal_id']); ?></td>
+        <?php if ($roleColumnExists): ?><td><?php echo esc($row['role'] ?? ''); ?></td><?php endif; ?>
         <td>
           <a class="btn btn-sm btn-outline-primary" href="admin.php?action=edit&id=<?php echo (int)$row['id']; ?>">Edit</a>
           <form method="post" action="admin.php?action=delete" style="display:inline-block;" onsubmit="return confirm('Delete this user?');">
@@ -182,10 +232,14 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endwhile; ?>
     </tbody>
   </table>
+  </div>
 
     <?php if (($action === 'edit' || isset($_GET['id'])) && !empty($_GET['id'])):
       $uid = (int)$_GET['id'];
-      $stmt = $mysqli->prepare('SELECT id,username,email,first_name,last_name,contact_number,region,country,postal_id,address FROM users WHERE id=?');
+      // include role when available
+      $selCols = 'id,username,email,first_name,last_name,contact_number,region,country,postal_id,address';
+      if ($roleColumnExists) $selCols .= ',role';
+      $stmt = $mysqli->prepare('SELECT ' . $selCols . ' FROM users WHERE id=?');
       $stmt->bind_param('i',$uid); $stmt->execute(); $u = $stmt->get_result()->fetch_assoc();
       if ($u): ?>
       <hr>
@@ -193,12 +247,12 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="post" action="admin.php?action=update" class="row g-2">
         <input type="hidden" name="csrf_token" value="<?php echo esc($_SESSION['csrf_token']); ?>">
         <input type="hidden" name="id" value="<?php echo (int)$u['id']; ?>">
-        <div class="col-md-2"><input name="username" value="<?php echo esc($u['username']); ?>" class="form-control"></div>
-        <div class="col-md-2"><input name="email" value="<?php echo esc($u['email']); ?>" class="form-control" required></div>
-        <div class="col-md-2"><input name="password" placeholder="Leave blank to keep" class="form-control"></div>
-        <div class="col-md-2"><input name="first_name" value="<?php echo esc($u['first_name']); ?>" class="form-control"></div>
-        <div class="col-md-2"><input name="last_name" value="<?php echo esc($u['last_name']); ?>" class="form-control"></div>
-        <div class="col-md-2"><input name="contact_number" value="<?php echo esc($u['contact_number']); ?>" class="form-control"></div>
+        <div class="col-md-2"><input name="username" placeholder="Enter username" value="<?php echo esc($u['username']); ?>" class="form-control"></div>
+        <div class="col-md-2"><input name="email" placeholder="user@example.com" value="<?php echo esc($u['email']); ?>" class="form-control" required></div>
+        <div class="col-md-2"><input name="password" placeholder="Password" class="form-control"></div>
+        <div class="col-md-2"><input name="first_name" placeholder="First name" value="<?php echo esc($u['first_name']); ?>" class="form-control"></div>
+        <div class="col-md-2"><input name="last_name" placeholder="Last name" value="<?php echo esc($u['last_name']); ?>" class="form-control"></div>
+        <div class="col-md-2"><input name="contact_number" placeholder="0917xxxxxxx" value="<?php echo esc($u['contact_number']); ?>" class="form-control"></div>
         <div class="col-md-2 region-picker-anchor">
           <label class="form-label visually-hidden">Region</label>
           <div class="region-display">
@@ -214,15 +268,53 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           </div>
         </div>
-        <div class="col-md-2"><input name="country" value="<?php echo esc($u['country']); ?>" class="form-control"></div>
-        <div class="col-md-2"><input name="postal_id" value="<?php echo esc($u['postal_id']); ?>" class="form-control"></div>
-        <div class="col-md-6"><input name="address" value="<?php echo esc($u['address']); ?>" class="form-control"></div>
+        <div class="col-md-2"><input name="country" placeholder="Country" value="<?php echo esc($u['country']); ?>" class="form-control"></div>
+        <div class="col-md-2"><input name="postal_id" placeholder="Postal ID" value="<?php echo esc($u['postal_id']); ?>" class="form-control"></div>
+        <?php if ($roleColumnExists): ?>
+        <div class="col-md-2">
+          <label class="form-label visually-hidden">Role</label>
+          <select name="role" class="form-control">
+            <option value="user" <?php echo (($u['role'] ?? '') === 'user') ? 'selected' : ''; ?>>user</option>
+            <option value="admin" <?php echo (($u['role'] ?? '') === 'admin') ? 'selected' : ''; ?>>admin</option>
+          </select>
+        </div>
+        <?php endif; ?>
+        <div class="col-md-6"><input name="address" placeholder="Street, City, etc." value="<?php echo esc($u['address']); ?>" class="form-control"></div>
         <div class="col-md-1"><button class="btn btn-success">Save</button></div>
       </form>
     <?php else: echo '<div class="alert alert-warning">User not found</div>'; endif; endif; ?>
 
 </div>
 </div>
+
+<?php
+// Render floating notification modal if password was changed by admin
+if (!empty($_SESSION['admin_flash']) && !empty($_SESSION['admin_flash']['password_changed'])):
+  $af = $_SESSION['admin_flash'];
+  // clear flash so it shows only once
+  unset($_SESSION['admin_flash']);
+?>
+<div id="adminNotifyOverlay" class="modal-overlay" aria-hidden="false">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="notifyTitle">
+    <h5 id="notifyTitle">Inform user — <?php echo esc($af['username']); ?></h5>
+    <div class="mb-2 text-muted small"><?php echo esc($af['email']); ?></div>
+    <p class="mb-3">Password has been changed by an administrator. You may want to notify the user that their password was updated.</p>
+    <div class="text-end">
+      <button id="dismissNotify" class="btn btn-secondary">Dismiss</button>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var overlay = document.getElementById('adminNotifyOverlay');
+  if (overlay) {
+    overlay.classList.add('show');
+    // close handler
+    document.getElementById('dismissNotify').addEventListener('click', function(){ overlay.classList.remove('show'); overlay.remove(); });
+  }
+});
+</script>
+<?php endif; ?>
 
 <!-- Floating Create Modal -->
 <div id="createOverlay" class="modal-overlay" aria-hidden="true">
@@ -260,6 +352,15 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
           <label class="form-label">Contact number</label>
           <input name="contact_number" class="form-control" placeholder="0917xxxxxxx">
         </div>
+        <?php if ($roleColumnExists): ?>
+        <div class="col-md-4">
+          <label class="form-label">Role</label>
+          <select name="role" class="form-control">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+        <?php endif; ?>
 
         <div class="col-12">
           <div class="row row-short">

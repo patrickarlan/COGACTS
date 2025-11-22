@@ -1,8 +1,10 @@
 <?php
-// Prevent Chrome BFCache
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
-header("Pragma: no-cache");
-header("Expires: 0");
+// Prevent Chrome BFCache — only send headers if they haven't already been sent
+if (!headers_sent()) {
+  header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private");
+  header("Pragma: no-cache");
+  header("Expires: 0");
+}
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -79,7 +81,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <!-- 👤 Profile Icon -->
         <div class="profile-container position-relative">
-          <a href="userdash.php" class="nav-link nav-hover text-white profile-icon-link">
+              <?php /* Use server-side router to decide destination on click */ ?>
+              <a href="/COG3BACK/ACT6/profile.php" class="nav-link nav-hover text-white profile-icon-link">
             <i class="bi bi-person-circle"></i>
           </a>
           <!-- Profile Dropdown -->
@@ -87,7 +90,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <?php if (isset($_SESSION['user_id'])): ?>
               <a href="COMPONENTS/logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
             <?php else: ?>
-              <a href="logsign.php" class="dropdown-item text-white py-2 px-3">Sign In</a>
+              <a href="logsign.php" class="dropdown-item text-white text-center py-2">Sign In</a>
             <?php endif; ?>
           </div>
         </div>

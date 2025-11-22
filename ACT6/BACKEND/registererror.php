@@ -19,10 +19,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "Username or email already exists.";
             } else {
                 $hashed = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $username, $email, $hashed);
+                // If the `role` column exists, insert role='user' by default
+                $role = 'user';
+                $roleColumnExists = false;
+                $colRes = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
+                if ($colRes && $colRes->num_rows > 0) {
+                    $roleColumnExists = true;
+                }
+                if ($roleColumnExists) {
+                    $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+                    $stmt->bind_param("ssss", $username, $email, $hashed, $role);
+                } else {
+                    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+                    $stmt->bind_param("sss", $username, $email, $hashed);
+                }
                 if ($stmt->execute()) {
+                    // On successful registration, set a flag so the page can show a success modal
                     $message = "Registration successful!";
+                    $registration_success = true;
                 } else {
                     $message = "Error: " . $stmt->error;
                 }

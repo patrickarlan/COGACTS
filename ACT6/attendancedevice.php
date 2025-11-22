@@ -39,13 +39,14 @@ if (!$conn->connect_error) {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAHUA: TERMS OF USE</title>
+    <title>DAHUA: Timetrack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="PICS/DAHUAfavi.png">
     <link rel="stylesheet" href="style.css?v=20251118-1">
+    <link rel="stylesheet" href="CSS/btnprod.css?v=20251122-1">
 
     <script>
     window.addEventListener("pageshow", function(event) {
@@ -55,6 +56,19 @@ if (!$conn->connect_error) {
     });
     </script>
 </head>    
+    <style>
+    /* Button hover scale for product buttons */
+    .product-panel .btn, .product-overview .btn { transition: transform .12s ease, box-shadow .12s ease; }
+    .product-panel .btn:hover, .product-overview .btn:hover { transform: scale(1.02); box-shadow: 0 12px 30px rgba(2,6,23,0.12); }
+    /* Slightly stronger shadow for primary gradient button */
+    .product-panel .btn-primary:hover { box-shadow: 0 16px 40px rgba(37,99,235,0.16); }
+    /* Modal / overlay for profile prompt and order panel */
+    .profile-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.38);display:none;align-items:center;justify-content:center;z-index:16000}
+    .profile-modal-overlay.show{display:flex; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);} 
+    .profile-modal{background:linear-gradient(180deg,#ffffff,#fbfdff);padding:20px;border-radius:10px;max-width:480px;width:94%;box-shadow:0 30px 80px rgba(2,6,23,0.18)}
+    /* Blur page when overlay is active (exclude overlay itself) */
+    body.overlay-open *:not(.profile-modal-overlay):not(.profile-modal-overlay *) { filter: blur(6px) !important; transition: filter .15s ease !important; }
+    </style>
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
 
@@ -111,6 +125,16 @@ if (!$conn->connect_error) {
               <img src="PICS/DAHUAattdevside.png" alt="Back">
             </button>
           </div>
+          
+          <!-- Buttons: Favourite / Order (inside product panel, under carousel) -->
+          <div class="d-flex justify-content-center gap-3 mt-4">
+            <button id="favBtn" class="btn btn-outline-primary btn-lg" data-product="attendancedevice" aria-pressed="false" title="Add to favourites">
+              <i class="bi bi-star" id="favIcon"></i> <span class="btn-label">Favourite</span>
+            </button>
+            <button id="orderBtn" class="btn btn-primary btn-lg" data-product="attendancedevice">
+              <i class="bi bi-cart-plus"></i> <span class="btn-label">Order now</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -122,7 +146,7 @@ if (!$conn->connect_error) {
       <h3 class="fw-bold text-center mb-4 mt-1 text-dark">Product Specifications</h3>
 
       <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle">
+        <table class="table table-bordered align-middle">
           <tbody>
             <!-- SYSTEM PARAMETER -->
             <tr class="table-danger">
@@ -158,6 +182,52 @@ if (!$conn->connect_error) {
               <td class="fw-semibold">Applicable</td>
               <td>Yes</td>
             </tr>
+            
+            <!-- PORT -->
+            <tr class="table-secondary">
+              <th colspan="2" class="text-center fw-bold">PORT</th>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Network</td>
+              <td>1 × RJ-45 10M/100M self-adaptive Ethernet port</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">USB</td>
+              <td>USB 2.0</td>
+            </tr>
+
+            <!-- GENERAL PARAMETER -->
+            <tr class="table-secondary">
+              <th colspan="2" class="text-center fw-bold">GENERAL PARAMETER</th>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Power Consumption</td>
+              <td>&le;2W</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Operating Temperature</td>
+              <td>0°C to +55°C (+32°F to +131°F)</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Operating Humidity</td>
+              <td>10%RH–90%RH</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Atmospheric Pressure</td>
+              <td>86 kPa–106 kPa</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Dimension</td>
+              <td>181.6 mm × 135.6 mm × 31 mm (7.15" × 5.34" × 1.22")</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Weight</td>
+              <td>0.37 kg (0.82 lb)</td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Installation</td>
+              <td>Installed on wall, installed in wall with mounting box</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -165,6 +235,33 @@ if (!$conn->connect_error) {
   </div>
 
 </section>
+
+<!-- Profile incomplete modal (hidden by default) -->
+<div id="profileModal" class="profile-modal-overlay" aria-hidden="true">
+  <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <h5 id="profileModalTitle">Update your profile info</h5>
+    <p class="mb-3">You need to add your contact number and address before placing an order.</p>
+    <div class="text-end">
+      <a href="editprofile.php" class="btn btn-primary me-2">Edit Profile</a>
+      <button id="profileModalBack" class="btn btn-secondary">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Order Panel (hidden by default) -->
+<div id="orderPanel" class="profile-modal-overlay" aria-hidden="true">
+  <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="orderPanelTitle">
+    <h5 id="orderPanelTitle">Order device</h5>
+    <p class="mb-2">Enter quantity to order</p>
+    <div class="mb-3">
+      <input id="orderQty" type="number" inputmode="numeric" pattern="[0-9]*" min="1" value="1" class="form-control" style="max-width:140px;" aria-label="Quantity">
+    </div>
+    <div class="text-end">
+      <button id="orderConfirmBtn" class="btn btn-primary me-2">Confirm</button>
+      <button id="orderCancelBtn" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <?php include 'COMPONENTS/footer.php'; ?>
 
@@ -238,6 +335,130 @@ document.addEventListener('DOMContentLoaded', function () {
       b.classList.toggle('active', i === activeIndex);
     });
   });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const favBtn = document.getElementById('favBtn');
+  const favIcon = document.getElementById('favIcon');
+  const orderBtn = document.getElementById('orderBtn');
+
+  function findFrontImage(){
+    let img = document.querySelector('.carousel-inner img[alt*="front"]');
+    if (!img) img = document.querySelector('.carousel-inner img');
+    if (!img) img = document.querySelector('.thumb-btn img[alt*="Front"]');
+    return img ? img.src : '';
+  }
+
+  const productTitleEl = document.querySelector('.product-panel h2');
+  const productTitle = productTitleEl ? productTitleEl.textContent.trim() : '';
+  const productImage = findFrontImage();
+
+  const profileModal = document.getElementById('profileModal');
+  function showProfileModal(){ if (profileModal){ profileModal.classList.add('show'); profileModal.setAttribute('aria-hidden','false'); } }
+  function hideProfileModal(){ if (profileModal){ profileModal.classList.remove('show'); profileModal.setAttribute('aria-hidden','true'); } }
+
+  if (favBtn) {
+    favBtn.addEventListener('click', function(){
+      const product = this.getAttribute('data-product');
+      const pressed = this.getAttribute('aria-pressed') === 'true';
+      this.setAttribute('aria-pressed', (!pressed).toString());
+      if (!pressed) { favIcon.classList.remove('bi-star'); favIcon.classList.add('bi-star-fill'); }
+      else { favIcon.classList.remove('bi-star-fill'); favIcon.classList.add('bi-star'); }
+
+      fetch('BACKEND/toggle_favourite.php', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'same-origin',
+        body: JSON.stringify({ product_key: product, product_title: productTitle, product_image: productImage })
+      }).then(r=>r.json()).then(json=>{
+        if (json && json.status === 'ok') return;
+        const revertPressed = !(!pressed);
+        favBtn.setAttribute('aria-pressed', revertPressed.toString());
+        if (revertPressed) { favIcon.classList.remove('bi-star'); favIcon.classList.add('bi-star-fill'); }
+        else { favIcon.classList.remove('bi-star-fill'); favIcon.classList.add('bi-star'); }
+        alert(json.message || 'Failed to update favourite');
+      }).catch(err=>{
+        const revertPressed = !(!pressed);
+        favBtn.setAttribute('aria-pressed', revertPressed.toString());
+        if (revertPressed) { favIcon.classList.remove('bi-star'); favIcon.classList.add('bi-star-fill'); }
+        else { favIcon.classList.remove('bi-star-fill'); favIcon.classList.add('bi-star'); }
+        console.error(err); alert('Network error while updating favourite');
+      });
+    });
+  }
+
+  // On load, fetch user's favourites and set the favourite button state accordingly
+  (function restoreFavState(){
+    try {
+      const productKey = favBtn ? favBtn.getAttribute('data-product') : null;
+      if (!productKey) return;
+      fetch('BACKEND/user_items.php', { credentials: 'same-origin' })
+        .then(r=>r.json())
+        .then(json => {
+          if (!json || json.status !== 'ok' || !Array.isArray(json.favourites)) return;
+          const isFav = json.favourites.some(f => f.product_key === productKey);
+          if (favBtn) {
+            favBtn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+            if (favIcon) {
+              if (isFav) { favIcon.classList.remove('bi-star'); favIcon.classList.add('bi-star-fill'); }
+              else { favIcon.classList.remove('bi-star-fill'); favIcon.classList.add('bi-star'); }
+            }
+          }
+        }).catch(()=>{});
+    } catch(e){ console.error('restoreFavState error', e); }
+  })();
+
+  if (orderBtn) {
+    orderBtn.addEventListener('click', function(){
+      const panel = document.getElementById('orderPanel');
+      const qtyInput = document.getElementById('orderQty');
+      if (!panel || !qtyInput) return;
+      qtyInput.value = '1';
+      panel.classList.add('show'); panel.setAttribute('aria-hidden','false');
+      document.body.classList.add('overlay-open');
+      setTimeout(()=>{ qtyInput.focus(); qtyInput.select(); }, 120);
+    });
+  }
+
+  const profileModalBack = document.getElementById('profileModalBack');
+  if (profileModalBack) profileModalBack.addEventListener('click', hideProfileModal);
+  // Order panel handlers
+  const orderPanel = document.getElementById('orderPanel');
+  const orderQty = document.getElementById('orderQty');
+  const orderConfirmBtn = document.getElementById('orderConfirmBtn');
+  const orderCancelBtn = document.getElementById('orderCancelBtn');
+
+  function hideOrderPanel(){ if (orderPanel){ orderPanel.classList.remove('show'); orderPanel.setAttribute('aria-hidden','true'); } document.body.classList.remove('overlay-open'); }
+
+  if (orderQty){
+    orderQty.addEventListener('input', function(e){ this.value = this.value.replace(/\D/g,''); if (this.value === '' || parseInt(this.value,10) < 1) this.value = '1'; });
+    orderQty.addEventListener('keydown', function(e){ if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') e.preventDefault(); });
+  }
+
+  if (orderCancelBtn) orderCancelBtn.addEventListener('click', function(){ hideOrderPanel(); });
+
+  if (orderConfirmBtn){
+    orderConfirmBtn.addEventListener('click', function(){
+      const qty = Math.max(1, parseInt(orderQty.value || '1', 10));
+      orderConfirmBtn.disabled = true;
+      const product = orderBtn.getAttribute('data-product');
+      const productTitleEl = document.querySelector('.product-panel h2');
+      const productTitle = productTitleEl ? productTitleEl.textContent.trim() : product;
+      const imgEl = document.querySelector('.carousel-inner img[alt*="front"]') || document.querySelector('.carousel-inner img') || document.querySelector('.thumb-btn img[alt*="Front"]');
+      const productImage = imgEl ? imgEl.src : '';
+
+      fetch('BACKEND/create_order.php', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'same-origin',
+        body: JSON.stringify({ product_key: product, qty: qty, product_title: productTitle, product_image: productImage })
+      }).then(r=>r.json()).then(json=>{
+        if (!json) { alert('Invalid server response'); return; }
+        if (json.status === 'ok') { hideOrderPanel(); }
+        else if (json.status === 'error' && json.code === 'incomplete_profile') { hideOrderPanel(); showProfileModal(); }
+        else { alert(json.message || 'Failed to place order'); }
+      }).catch(err=>{ console.error(err); alert('Network error while placing order'); })
+      .finally(()=>{ orderConfirmBtn.disabled = false; });
+    });
+  }
 });
 </script>
 

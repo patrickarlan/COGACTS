@@ -1,0 +1,40 @@
+/* Responsive button styles for product panels */
+/* Keeps button text readable while scaling down on narrow screens */
+
+.product-panel .btn, .product-overview .btn, .product-panel .btn-lg, .product-overview .btn-lg {
+  font-size: 1rem;
+  padding: 0.56rem 1.1rem;
+  line-height: 1.1;
+}
+
+.product-panel .btn i, .product-overview .btn i { /* icons inside buttons */
+  font-size: 1rem;
+}
+
+/* Slightly smaller on small devices */
+@media (max-width: 768px) {
+  .product-panel .btn, .product-overview .btn, .product-panel .btn-lg, .product-overview .btn-lg {
+    font-size: 0.92rem;
+    padding: 0.48rem 0.9rem;
+  }
+  .product-panel .btn i, .product-overview .btn i { font-size: 0.95rem; }
+}
+
+/* Phones and very small screens */
+@media (max-width: 420px) {
+  .product-panel .btn, .product-overview .btn, .product-panel .btn-lg, .product-overview .btn-lg {
+    font-size: 0.80rem;
+    padding: 0.4rem 0.6rem;
+  }
+  .product-panel .btn i, .product-overview .btn i { font-size: 0.9rem; }
+}
+
+/* Ensure button contents wrap gracefully rather than overflowing */
+.product-panel .btn .btn-label, .product-overview .btn .btn-label {
+  display:inline-block; vertical-align:middle; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 10rem;
+}
+
+/* If you want icons and text stacked on very narrow devices */
+@media (max-width: 340px) {
+  .product-panel .btn, .product-overview .btn { display:flex; flex-direction:column; align-items:center; gap:4px; }
+}

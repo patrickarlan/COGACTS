@@ -1,14 +1,9 @@
 <?php include 'BACKEND/registererror.php'; ?>
-
-
 <!doctype html>
 <html lang="en">
-
 <?php include 'COMPONENTS/head.php'; ?>
-
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
-
 
 <!--START HERE-->
 <section class="login">
@@ -57,8 +52,8 @@
               </div>
           </form>
           <?php if ($message): ?>
-            <?php if ($message === 'Registration successful!'): ?>
-              <div class="alert alert-success mt-3 text-center">Registration successful! You can now <a href="logsign.php">login</a>.</div>
+            <?php if (!empty($registration_success) && $message === 'Registration successful!'): ?>
+              <!-- Success modal trigger; modal will be rendered below -->
             <?php else: ?>
               <div class="alert alert-danger mt-3 text-center"><?php echo $message; ?></div>
             <?php endif; ?>
@@ -67,6 +62,53 @@
     </div> 
   </div>
 </section>
+
+<!-- Success Modal (hidden by default) -->
+<?php if (!empty($registration_success) && $message === 'Registration successful!'): ?>
+  <div id="regSuccessOverlay" aria-hidden="false" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,17,44,0.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:9999;">
+    <div id="regSuccessPanel" role="dialog" aria-modal="true" style="background:#ffffff;color:#0b1726;border-radius:12px;padding:28px;max-width:480px;width:92%;box-shadow:0 10px 40px rgba(2,17,44,0.12);border:1px solid rgba(6,44,91,0.06);text-align:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
+      <h4 class="mb-2" style="color:#062c5b;margin-bottom:8px;">Registration successful!</h4>
+      <p class="mb-3" style="color:#062c5b;margin-bottom:18px;">Your account has been created.</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button id="regGoLogin" class="btn btn-primary" style="min-width:120px;">Login</button>
+        <button id="regAnother" class="btn btn-outline-primary" style="min-width:120px;">Register another</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var overlay = document.getElementById('regSuccessOverlay');
+      var panel = document.getElementById('regSuccessPanel');
+      function closeOverlay(){
+        if (overlay) overlay.remove();
+      }
+      // Button handlers
+      document.getElementById('regGoLogin').addEventListener('click', function(){
+        window.location.href = 'logsign.php';
+      });
+      document.getElementById('regAnother').addEventListener('click', function(){
+        // reset the form inputs to empty/placeholder-ready state
+        var form = document.querySelector('form');
+        if (!form) return;
+        form.reset();
+        // remove validation error states/tooltips if present
+        document.querySelectorAll('.error-tooltip').forEach(function(it){ it.remove(); });
+        document.querySelectorAll('.register-control').forEach(function(it){ it.classList.remove('error'); });
+        closeOverlay();
+      });
+      // Do NOT dismiss when clicking outside or pressing Escape — modal is mandatory
+      // (overlay covers the page and prevents interaction with underlying content)
+      overlay.addEventListener('click', function(e){
+        // prevent clicks from reaching underlying page
+        e.stopPropagation();
+        e.preventDefault();
+      });
+      // Accessibility: focus the primary button
+      var primary = document.getElementById('regGoLogin');
+      if (primary) primary.focus();
+    })();
+  </script>
+<?php endif; ?>
 
 
 <?php include 'COMPONENTS/footer.php'; ?>

@@ -1,0 +1,94 @@
+.dashboard-section {
+    margin: 2rem auto;
+}
+.dashboard-section .row { display: flex; flex-wrap: wrap; }
+
+/* Ensure the dashboard container centers its content and doesn't drift left */
+.dashboard-section.container { max-width: 1100px; margin-left: auto; margin-right: auto; padding-left: 0.75rem; padding-right: 0.75rem; }
+/* Ensure the container centers its inner content reliably */
+.dashboard-section.container { display: block; box-sizing: border-box; }
+
+@media (max-width: 1200px) {
+	/* Stack columns vertically */
+	.dashboard-section .row { flex-direction: column; align-items: center; }
+
+	/* Override Bootstrap utility classes that force left alignment on the row */
+	.dashboard-section .row.align-items-start { align-items: center !important; }
+	.dashboard-section .row.justify-content-center { justify-content: center !important; }
+
+	/* Columns become full-width and ordered as requested */
+	/* Use a comfortable fixed card width and center them rather than forcing full-bleed */
+	/* Wider stacked cards for better form/layout space at tablet sizes */
+	.dashboard-section .col-md-3 { order: 1; flex: 0 0 auto; width: min(720px, 92%); max-width: 720px; }
+	.dashboard-section .col-md-4 { order: 2; flex: 0 0 auto; width: min(720px, 92%); max-width: 720px; }
+	.dashboard-section .col-md-5 { order: 3; flex: 0 0 auto; width: min(720px, 92%); max-width: 720px; }
+
+	/* Add spacing between stacked panels */
+	.dashboard-section .col-md-3, .dashboard-section .col-md-4, .dashboard-section .col-md-5 { margin-bottom: 1rem; }
+
+	/* Ensure cards and their list groups take full width */
+	.card-fav, .card-order, .card-profile { width: 100%; }
+
+	/* Layout items inside favourite/order panels for stacked view */
+	/* Favourites are centered and stacked vertically (image above title) */
+	#favourite-list .list-group-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 0.6rem;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+	}
+
+	/* Force favourite images to a consistent size (override inline JS width) */
+	#favourite-list img { width: 120px !important; height: auto !important; max-width: 92%; }
+
+	/* Orders keep a horizontal row layout for quick scanning */
+	#order-list .list-group-item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
+	}
+
+	/* Constrain images so they don't push content out */
+	#favourite-list img, #order-list img { max-width: 120px; width: auto; height: auto; display:block; margin: 0 auto; }
+
+	/* Info column should be able to shrink and wrap */
+	#order-list .list-group-item > div, #favourite-list .list-group-item > div { flex: 1 1 auto; min-width: 0; }
+
+	/* Center action buttons beneath item details on small widths */
+	#order-list .list-group-item .btn, #favourite-list .list-group-item .btn { margin: 0.4rem auto; }
+}
+
+/* Additional smaller breakpoints to improve wrapping and sizing */
+@media (max-width: 769px) {
+	#favourite-list .list-group-item, #order-list .list-group-item { gap: .6rem; }
+	#favourite-list img, #order-list img { max-width: 110px; }
+	#order-list .list-group-item .btn, #favourite-list .list-group-item .btn { font-size: 0.9rem; padding: 0.28rem 0.5rem; }
+}
+
+@media (max-width: 569px) {
+	#favourite-list .list-group-item, #order-list .list-group-item {
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+	#favourite-list img, #order-list img { max-width: 140px; }
+	#order-list .list-group-item > div, #favourite-list .list-group-item > div { width: 100%; }
+	#order-list .list-group-item .btn, #favourite-list .list-group-item .btn { width: auto; display: inline-block; }
+
+	/* On small screens, let the dashboard columns expand to full width */
+	.dashboard-section .col-md-3, .dashboard-section .col-md-4, .dashboard-section .col-md-5 {
+		width: 100% !important;
+		max-width: 100% !important;
+		flex: 0 0 100% !important;
+	}
+}
+
+/* Make sure small status labels wrap instead of overflowing */
+#order-list .mb-2 small { white-space: normal; }

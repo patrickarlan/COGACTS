@@ -162,7 +162,7 @@ $showWelcome
 <main style="flex: 1 0 auto;">
 <div class="banner-panel">
   <div class="banner-dash">
-    <img src="PICS/DAHUAcontact.png" alt="Bannerdash" class="banner-dash" style="width:100%; max-height:200px; object-fit:cover;" />
+    <img src="PICS/DAHUAdash.png" alt="Bannerdash" class="banner-dash" style="width:100%; max-height:300px; object-fit:cover;" />
   </div>
 </div>
 
@@ -180,22 +180,22 @@ $showWelcome
             <img src="PICS/DAHUAfavi.png" alt="Profile" class="rounded-circle mb-3" style="width:80px;height:80px;object-fit:cover;">
             <h6 class="mb-1"><?php echo htmlspecialchars($username); ?></h6>
             <p class="text-muted mb-2"><?php echo htmlspecialchars($email); ?></p>
-            <a href="BACKEND/editprofile.php" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+            <a href="BACKEND/editprofile.php" class="btn-text btn btn-outline-primary btn-sm">Edit Profile</a>
             <div class="mt-2">
-              <a href="BACKEND/accountsettings.php" class="btn btn-outline-success btn-sm">Account Settings</a>
+              <a href="BACKEND/accountsettings.php" class="btn-text btn btn-outline-success btn-sm">Account Settings</a>
             </div>
           </div>
         </div>
       </div>
       <!-- Favourite Panel -->
       <div class="col-md-4 mb-4">
-        <div class="card-fav h-100 shadow-sm" style="outline: #5353531a 0.5px solid; border-radius:3px; box-shadow: 0 4px 12px #5353531a; padding-bottom:20px;">
+        <div class="card-fav h-100 shadow-sm" style="outline: #5353531a 0.5px solid; border-radius:3px; box-shadow: 0 4px 12px #5353531a; padding-bottom:5px;">
           <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Favourite Panel</h5>
           </div>
           <div class="card-body">
             <p class="text-muted text-center">Your favourite products will appear here.</p>
-            <ul class="list-group list-group-flush" id="favourite-list">
+            <ul class="list-group list-group-flush text-center" id="favourite-list">
               <li class="list-group-item">No favourites yet.</li>
             </ul>
           </div>
@@ -521,9 +521,10 @@ document.addEventListener('DOMContentLoaded', function () {
             actions.appendChild(status);
 
             // Cancel button for pending orders
+            actions.style.textAlign = 'center';
             if ((item.status || '').toLowerCase() === 'pending') {
               const btn = document.createElement('button');
-              btn.className = 'btn btn-sm btn-outline-danger';
+              btn.className = 'btn-cancel btn btn-sm btn-outline-danger';
               btn.textContent = 'Cancel';
               btn.addEventListener('click', function () {
                 // show floating confirm modal

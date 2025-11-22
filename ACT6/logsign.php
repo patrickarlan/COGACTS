@@ -82,13 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
 
       if ($loggedIn) {
-                    // Set cookies if remember me is checked, but do NOT store admin password in cookie
+                    // Set cookies if remember me is checked. IMPORTANT: do NOT store passwords in cookies.
                     if ($remember && !$isAdminLogin) {
+                      // only remember the username; storing plaintext passwords in cookies is insecure
                       setcookie('remember_username', $username, time()+60*60*24*30, '/');
-                      setcookie('remember_password', $password, time()+60*60*24*30, '/');
                     } else {
                       setcookie('remember_username', '', time()-3600, '/');
-                      setcookie('remember_password', '', time()-3600, '/');
                     }
                     // Redirect: admins -> admin panel, others -> user dashboard
                     if (!empty($_SESSION['is_admin'])) {
@@ -122,15 +121,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container-login shadow">
       <div class="card login-panel shadow" style="width: 100%;">
             <h3 class="text-center mb-4">Login</h3>
-            <form action="logsign.php" method="POST">
+            <form action="logsign.php" method="POST" autocomplete="off">
               <div class="mb-3 position-relative">
                   <label for="username" class="form-label">Username</label>
-                  <input type="text" class="form-control login-control" id="username" name="username" placeholder="Enter username" value="<?php echo isset($_COOKIE['remember_username']) ? htmlspecialchars($_COOKIE['remember_username']) : ''; ?>">
+                  <input type="text" class="form-control login-control" id="username" name="username" placeholder="Enter username" autocomplete="username" value="<?php echo isset($_COOKIE['remember_username']) ? htmlspecialchars($_COOKIE['remember_username']) : ''; ?>">
               </div>
               <div class="mb-3 position-relative">
                   <label for="password" class="form-label">Password</label>
                   <div style="position:relative;">
-                    <input type="password" class="form-control login-control" id="password" name="password" placeholder="Enter password" style="padding-right:2.5rem;" value="<?php echo isset($_COOKIE['remember_password']) ? htmlspecialchars($_COOKIE['remember_password']) : ''; ?>">
+                    <input type="password" class="form-control login-control" id="password" name="password" placeholder="Enter password" style="padding-right:2.5rem;" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
                     <span class="show-password-icon" onclick="togglePassword()" style="position:absolute; top:50%; right:1rem; transform:translateY(-50%); cursor:pointer;">
                       <i class="bi bi-eye" id="togglePasswordIcon" style="font-size:1.5rem;"></i>
                     </span>

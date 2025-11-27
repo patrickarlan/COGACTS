@@ -22,6 +22,16 @@ function redirect_back($url = '../BACKEND/editprofile.php', $msg = null, $type =
 $first = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';
 $last  = isset($_POST['last_name'])  ? trim($_POST['last_name'])  : '';
 $phone = isset($_POST['contact_number']) ? trim($_POST['contact_number']) : '';
+// Normalize phone: keep digits only
+$phone_digits = preg_replace('/\D+/', '', $phone);
+// Enforce exactly 11 digits for mobile numbers (if provided)
+if ($phone_digits === '') {
+    redirect_back('../BACKEND/editprofile.php', 'Contact number is required', 'error');
+}
+if (!preg_match('/^\d{11}$/', $phone_digits)) {
+    redirect_back('../BACKEND/editprofile.php', 'Contact number must be exactly 11 digits', 'error');
+}
+$phone = $phone_digits;
 $region = isset($_POST['region']) ? trim($_POST['region']) : '';
 $country = isset($_POST['country']) ? trim($_POST['country']) : '';
 $postal  = isset($_POST['postal_id']) ? trim($_POST['postal_id']) : '';

@@ -124,3 +124,34 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
+  <script>
+  // Generic numeric contact handler: attach to inputs named contact_number (if present)
+  document.addEventListener('DOMContentLoaded', function(){
+    function enforceNumeric(el){
+      if (!el) return;
+      el.setAttribute('inputmode','numeric');
+      el.setAttribute('maxlength','11');
+      el.addEventListener('keydown', function(e){
+        var allowed = [8,9,13,27,46,37,38,39,40];
+        if (allowed.indexOf(e.keyCode) !== -1) return;
+        if ((e.ctrlKey || e.metaKey) && ['a','c','v','x'].indexOf(e.key.toLowerCase()) !== -1) return;
+        if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+        if (el.value && el.value.length >= 11 && !['Backspace','Delete'].includes(e.key)) e.preventDefault();
+      });
+      el.addEventListener('paste', function(e){
+        var paste = (e.clipboardData || window.clipboardData).getData('text');
+        var digits = paste.replace(/\D+/g,'').slice(0,11);
+        e.preventDefault();
+        var start = el.selectionStart || 0;
+        var end = el.selectionEnd || 0;
+        var newVal = (el.value.slice(0,start) + digits + el.value.slice(end)).replace(/\D+/g,'').slice(0,11);
+        el.value = newVal;
+      });
+      el.addEventListener('input', function(){
+        var v = el.value.replace(/\D+/g,'').slice(0,11);
+        if (el.value !== v) el.value = v;
+      });
+    }
+    document.querySelectorAll('input[name="contact_number"], input.contact-number, #contact_number').forEach(enforceNumeric);
+  });
+  </script>

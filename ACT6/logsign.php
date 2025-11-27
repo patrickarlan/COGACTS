@@ -28,24 +28,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (file_exists($adminConfigPath)) {
         $adminConfig = include $adminConfigPath; // returns ['username'=>..., 'password_hash'=>...]
     }
-    if ($username && $password) {
-      $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
-      $stmt->bind_param("s", $username);
-      $stmt->execute();
-      $result = $stmt->get_result();
-      $row = $result->fetch_assoc();
+    // determine whether user requested admin-only login
+    $adminRequested = isset($_POST['admin_login']) && ($_POST['admin_login'] === '1' || $_POST['admin_login'] === 'true' || $_POST['admin_login'] === 1);
 
+    if ($username && $password) {
       $loggedIn = false;
       $isAdminLogin = false;
 
-        // Primary: check DB user
+      // First: check protected admin config (server-side secret). This takes precedence.
+      if ($adminConfig && ($username === ($adminConfig['username'] ?? '')) && password_verify($password, $adminConfig['password_hash'] ?? '')) {
+        // Protected admin login (does not require a DB user). Assign a sentinel user_id=0.
+        $_SESSION['user_id'] = 0;
+        $_SESSION['username'] = $adminConfig['username'];
+        $_SESSION['is_admin'] = 1;
+        $_SESSION['role'] = 'admin';
+        $loggedIn = true;
+        $isAdminLogin = true;
+      }
+
+      // If not protected admin, check DB user
+      if (!$loggedIn) {
+        $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
         if ($row && password_verify($password, $row['password'])) {
           $_SESSION['user_id'] = $row['id'];
           $_SESSION['username'] = $row['username'];
           // If the users table has a 'role' column, fetch and set it in session
           $role = null;
           $colRes = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
-          if ($colRes && $colRes->num_rows > 0) {
+          $hasRoleCol = ($colRes && $colRes->num_rows > 0);
+          if ($hasRoleCol) {
             // fetch role for this user
             $rstmt = $conn->prepare('SELECT role FROM users WHERE id=?');
             $rstmt->bind_param('i', $row['id']);
@@ -58,30 +74,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               if (is_string($role) && strtolower(trim($role)) === 'admin') {
                 $_SESSION['is_admin'] = 1;
                 $isAdminLogin = true;
+              } else {
+                // If admin-only login requested but this DB user is not admin, reject
+                if ($adminRequested) {
+                  // clear any partial session variables set above
+                  unset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['role']);
+                  // generic error message to avoid revealing account existence
+                  $message = 'Username or Password is incorrect';
+                  $loggedIn = false;
+                }
               }
             }
           }
-          $loggedIn = true;
-          // If this DB username matches the protected admin username and password also matches, mark admin
-          if ($adminConfig && ($row['username'] === ($adminConfig['username'] ?? '')) && password_verify($password, $adminConfig['password_hash'] ?? '')) {
-            $_SESSION['is_admin'] = 1;
-            $_SESSION['role'] = 'admin';
-            $isAdminLogin = true;
+          // If adminRequested and role column not present, only allow protected admin config
+          if ($adminRequested && !$hasRoleCol) {
+            // role column missing, so DB users cannot be considered admin -> reject
+            unset($_SESSION['user_id'], $_SESSION['username']);
+            // generic error message
+            $message = 'Username or Password is incorrect';
+            $loggedIn = false;
           }
-      }
-
-      // Fallback: if no DB user matched, check protected admin config
-        if (!$loggedIn && $adminConfig && ($username === ($adminConfig['username'] ?? '')) && password_verify($password, $adminConfig['password_hash'] ?? '')) {
-          // Protected admin login (does not require a DB user). Assign a sentinel user_id=0.
-          $_SESSION['user_id'] = 0;
-          $_SESSION['username'] = $adminConfig['username'];
-          $_SESSION['is_admin'] = 1;
-          $_SESSION['role'] = 'admin';
           $loggedIn = true;
-          $isAdminLogin = true;
+        }
       }
 
       if ($loggedIn) {
+            // Regenerate session id on successful login to prevent fixation
+            if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+            session_regenerate_id(true);
                     // Set cookies if remember me is checked. IMPORTANT: do NOT store passwords in cookies.
                     if ($remember && !$isAdminLogin) {
                       // only remember the username; storing plaintext passwords in cookies is insecure
@@ -97,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     exit();
       } else {
-         $message = "ERROR: Username or Password is incorrect";
+        $message = "Username or Password is incorrect";
       }
     } else {
       $message = "All fields are required.";
@@ -112,6 +132,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 
 <?php include 'COMPONENTS/head.php'; ?>
+
+<script>
+// If this page is restored from bfcache or navigated via back/forward,
+// always re-check server session by navigating to `session_landing.php`.
+window.addEventListener('pageshow', function(event){
+  var persisted = !!event.persisted;
+  try {
+    var nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')) || [];
+    var navType = (nav[0] && nav[0].type) || '';
+    if (persisted || navType === 'back_forward') {
+      // Replace location so history entry is not kept
+      window.location.replace('session_landing.php');
+    }
+  } catch(e) {
+    if (persisted) window.location.replace('session_landing.php');
+  }
+});
+</script>
 
 <body>
 <?php include 'COMPONENTS/header.php'; ?>
@@ -138,6 +176,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="mb-3 form-check">
                   <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" <?php echo isset($_COOKIE['remember_username']) ? 'checked' : ''; ?>>
                   <label class="form-check-label" for="rememberMe">Remember me</label>
+              </div>
+              <div class="mb-3">
+                <input type="hidden" id="admin_login" name="admin_login" value="0">
+                <button type="button" id="adminToggle" class="btn btn-outline-primary w-100 mb-2 btn-sm" title="Toggle admin login">Admin login</button>
               </div>
               <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
@@ -250,6 +292,31 @@ document.addEventListener('DOMContentLoaded', function () {
     tooltip.className = 'error-tooltip';
     tooltip.innerHTML = '<span class="error-icon"><i class="bi bi-exclamation-square-fill"></i></span>' + message;
     input.parentElement.insertBefore(tooltip, input.nextSibling);
+  }
+  // Admin toggle button behavior
+  const adminToggle = document.getElementById('adminToggle');
+  const adminHidden = document.getElementById('admin_login');
+  if (adminToggle && adminHidden) {
+    adminToggle.addEventListener('click', function(){
+      const on = adminHidden.value === '1';
+      if (on) {
+        adminHidden.value = '0';
+        adminToggle.classList.remove('btn-primary');
+        adminToggle.classList.add('btn-outline-primary');
+      } else {
+        adminHidden.value = '1';
+        adminToggle.classList.remove('btn-outline-primary');
+        adminToggle.classList.add('btn-primary');
+      }
+    });
+    // Copy computed sizing from the Login button so toggling appearance doesn't change size
+    // enforce a small fixed height/padding so toggling doesn't change size
+    adminToggle.style.boxSizing = 'border-box';
+    adminToggle.style.padding = '.375rem .75rem';
+    adminToggle.style.fontSize = '.875rem';
+    adminToggle.style.lineHeight = '1.2';
+    adminToggle.style.height = '36px';
+    adminToggle.style.borderWidth = '1px';
   }
 });
 </script>

@@ -88,7 +88,7 @@ if (session_status() === PHP_SESSION_NONE) {
           <!-- Profile Dropdown -->
           <div class="profile-panel bg-dark text-white rounded-3 shadow py-2">
             <?php if (isset($_SESSION['user_id'])): ?>
-              <a href="COMPONENTS/logout.php" class="dropdown-item text-white py-2 px-3">Logout</a>
+              <a href="COMPONENTS/logout.php" id="headerLogout" class="dropdown-item text-white py-2 px-3">Logout</a>
             <?php else: ?>
               <a href="logsign.php" class="dropdown-item text-white text-center py-2">Sign In</a>
             <?php endif; ?>
@@ -153,5 +153,15 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
+  // Confirm logout from header
+  try {
+    var headerLogout = document.getElementById('headerLogout');
+    if (headerLogout) {
+      headerLogout.addEventListener('click', function(e){
+        var ok = confirm('Are you sure you want to sign out from the site?');
+        if (!ok) { e.preventDefault(); e.stopPropagation(); }
+      });
+    }
+  } catch(e) {}
 });
 </script>

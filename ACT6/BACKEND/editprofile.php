@@ -103,14 +103,30 @@ if (!$conn->connect_error) {
       </div>
       <div class="mb-3 position-relative">
         <label for="contact_number" class="form-label">Contact number <span class="required-star">*</span></label>
-        <input type="tel" id="contact_number" name="contact_number" class="form-control" placeholder="Contact number" value="<?php echo htmlspecialchars($contact_number); ?>">
+        <input type="tel" id="contact_number" name="contact_number" class="form-control contact-number" placeholder="09171234567" value="<?php echo htmlspecialchars($contact_number); ?>" inputmode="numeric" pattern="\d{11}" maxlength="11">
       </div>
       <div class="mb-3">
         <label for="region" class="form-label">Region / Country / Postal</label>
         <div class="row g-2">
-          <div class="col-sm-6 col-md-4 position-relative">
-            <input type="text" id="region" name="region" class="form-control form-control-sm" placeholder="Region" value="<?php echo htmlspecialchars($region); ?>">
-          </div>
+             <div class="col-sm-6 col-md-4 position-relative">
+               <label class="visually-hidden" for="regionDisplay">Region</label>
+               <div style="position:relative;">
+                 <input id="regionDisplay" class="form-control form-control-sm" placeholder="Select region" aria-haspopup="listbox" aria-expanded="false" autocomplete="off" value="<?php echo htmlspecialchars($region); ?>">
+                 <input type="hidden" id="regionHidden" name="region" value="<?php echo htmlspecialchars($region); ?>">
+                 <div id="regionDropdown" class="shadow-sm" style="position:absolute; left:0; right:0; top:calc(100% + .35rem); background:#fff; border:1px solid rgba(0,0,0,.12); border-radius:.25rem; max-height:180px; overflow:auto; display:none; z-index:1050;">
+                  <div class="p-2 region-item" data-val="Africa" role="option" tabindex="0" style="cursor:pointer;">Africa</div>
+                  <div class="p-2 region-item" data-val="Asia" role="option" tabindex="0" style="cursor:pointer;">Asia</div>
+                  <div class="p-2 region-item" data-val="Europe" role="option" tabindex="0" style="cursor:pointer;">Europe</div>
+                  <div class="p-2 region-item" data-val="North America" role="option" tabindex="0" style="cursor:pointer;">North America</div>
+                  <div class="p-2 region-item" data-val="Central America" role="option" tabindex="0" style="cursor:pointer;">Central America</div>
+                  <div class="p-2 region-item" data-val="Caribbean" role="option" tabindex="0" style="cursor:pointer;">Caribbean</div>
+                  <div class="p-2 region-item" data-val="South America" role="option" tabindex="0" style="cursor:pointer;">South America</div>
+                  <div class="p-2 region-item" data-val="Middle East" role="option" tabindex="0" style="cursor:pointer;">Middle East</div>
+                  <div class="p-2 region-item" data-val="Oceania" role="option" tabindex="0" style="cursor:pointer;">Oceania</div>
+                  <div class="p-2 region-item" data-val="Antarctica" role="option" tabindex="0" style="cursor:pointer;">Antarctica</div>
+                 </div>
+               </div>
+             </div>
           <div class="col-sm-6 col-md-4 position-relative">
             <input type="text" id="country" name="country" class="form-control form-control-sm" placeholder="Country" value="<?php echo htmlspecialchars($country); ?>">
           </div>
@@ -217,6 +233,58 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+  // Enforce numeric-only and maxlength for contact number as the user types
+  if (contact) {
+    contact.addEventListener('input', function (e) {
+      // remove any non-digit characters
+      const digits = this.value.replace(/\D+/g, '');
+      // limit to 11 digits
+      this.value = digits.slice(0, 11);
+    });
+    contact.addEventListener('paste', function (e) {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData('text') || '';
+      const digits = pasted.replace(/\D+/g, '').slice(0,11);
+      // insert sanitized digits at caret
+      const start = this.selectionStart || 0;
+      const end = this.selectionEnd || 0;
+      const val = this.value || '';
+      this.value = (val.slice(0, start) + digits + val.slice(end)).replace(/\D+/g,'').slice(0,11);
+    });
+  }
+
+  // Region dropdown (input-like) behavior
+  var regionDisplay = document.getElementById('regionDisplay');
+  var regionHidden = document.getElementById('regionHidden');
+  var regionDropdown = document.getElementById('regionDropdown');
+  if (regionDisplay && regionDropdown && regionHidden) {
+    function closeRegion() { regionDropdown.style.display = 'none'; regionDisplay.setAttribute('aria-expanded','false'); }
+    function openRegion() { regionDropdown.style.display = 'block'; regionDisplay.setAttribute('aria-expanded','true'); }
+    // toggle on click
+    regionDisplay.addEventListener('click', function(e){
+      if (regionDropdown.style.display === 'block') closeRegion(); else openRegion();
+    });
+    // handle selection + keyboard navigation
+    var items = Array.prototype.slice.call(regionDropdown.querySelectorAll('.region-item'));
+    items.forEach(function(it, idx){
+      it.addEventListener('click', function(){ var v=this.getAttribute('data-val'); regionHidden.value=v; regionDisplay.value=v; closeRegion(); });
+      it.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); var n = items[idx+1] || items[0]; n.focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); var p = items[idx-1] || items[items.length-1]; p.focus(); }
+      });
+    });
+    // open with keyboard and focus first/last
+    regionDisplay.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowDown') { e.preventDefault(); openRegion(); setTimeout(function(){ (items[0]||items[items.length-1]).focus(); }, 0); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); openRegion(); setTimeout(function(){ (items[items.length-1]||items[0]).focus(); }, 0); }
+    });
+    // close on outside click
+    document.addEventListener('click', function(e){ if (!regionDropdown.contains(e.target) && e.target !== regionDisplay) closeRegion(); });
+    // keyboard: Escape closes
+    regionDisplay.addEventListener('keydown', function(e){ if (e.key === 'Escape') { e.preventDefault(); closeRegion(); regionDisplay.blur(); } });
+  }
 
   form.addEventListener('submit', function(e) {
     // Clear old tooltips

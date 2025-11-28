@@ -71,10 +71,14 @@ if (session_status() === PHP_SESSION_NONE) {
                   <!-- Search Panel -->
                   <div class="search-panel bg-dark text-white p-3 rounded-3 shadow">
                     <input 
-                    type="text" 
-                    class="form-control bg-secondary text-white border-0" 
-                    placeholder="Search product..."
+                      id="headerSearchInput"
+                      type="text" 
+                      class="form-control bg-secondary text-white border-0" 
+                      placeholder="Search product..."
+                      aria-label="Search products"
+                      autocomplete="off"
                     >
+                    <ul id="headerSearchResults" class="list-unstyled m-0 mt-2" style="max-height:320px;overflow:auto;"></ul>
                   </div>
                 </div>
 
@@ -111,6 +115,92 @@ if (session_status() === PHP_SESSION_NONE) {
       var icon = panel.parentElement.querySelector('.dropdown-toggle-icon');
       if (icon) icon.setAttribute('aria-expanded', 'false');
     }
+  });
+});
+</script>
+
+<!-- Inline logout confirmation overlay (appears on current page) -->
+<div id="headerLogoutOverlay" style="display:none;position:fixed;inset:0;z-index:16000;align-items:center;justify-content:center;">
+  <div style="position:absolute;inset:0;background:rgba(255,255,255,0.06);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);"></div>
+  <div role="dialog" aria-modal="true" aria-labelledby="hlTitle" style="position:relative;max-width:420px;width:92%;background:rgba(255,255,255,0.92);padding:18px;border-radius:10px;box-shadow:0 20px 60px rgba(2,6,23,0.18);">
+    <h3 id="hlTitle" style="margin:0 0 8px 0;font-size:1.05rem;color:#111">Sign out from the site?</h3>
+    <p style="margin:0 0 14px 0;color:#444">You are about to sign out. This will end your current session and return you to the login page.</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="headerLogoutCancel" class="btn" style="padding:8px 12px;border-radius:6px;border:1px solid #d0d5dd;background:transparent;cursor:pointer">Cancel</button>
+      <form id="headerLogoutForm" method="post" action="COMPONENTS/logout.php" style="display:inline;margin:0;padding:0;">
+        <button type="submit" class="btn primary" style="padding:8px 12px;border-radius:6px;border:1px solid #dc3545;background:#dc3545;color:#fff">Sign out</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--search bar feature-->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const input = document.getElementById('headerSearchInput');
+  const resultsEl = document.getElementById('headerSearchResults');
+  if (!input || !resultsEl) return;
+
+  // Small in-page product catalog (kept in sync with userdash mappings)
+  const products = [
+    { key: 'attendancedevice', title: 'ASA1222G', image: 'PICS/DAHUAprod1.png', page: 'attendancedevice.php' },
+    { key: 'attendance2', title: 'ASA1222E-S', image: 'PICS/DAHUAattendance2.png', page: 'attendance2.php' },
+    { key: 'attendance3', title: 'ASA1222E', image: 'PICS/DAHUAattendance3.png', page: 'attendance3.php' }
+  ];
+
+  let debounceTimer = null;
+  let activeIndex = -1;
+
+  function clearResults(){ resultsEl.innerHTML = ''; activeIndex = -1; }
+
+  function renderResults(list){
+    resultsEl.innerHTML = '';
+    if (!list || list.length === 0) return;
+    list.forEach((p, idx) => {
+      const li = document.createElement('li');
+      li.className = 'py-2 px-2 d-flex gap-2 align-items-center search-result-item';
+      li.style.cursor = 'pointer';
+      li.tabIndex = 0;
+      li.dataset.index = idx;
+
+      const img = document.createElement('img'); img.src = p.image; img.alt = p.title; img.style.width='56px'; img.style.height='44px'; img.style.objectFit='cover'; img.className='rounded';
+      const wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="text-white fw-semibold">' + (p.title||p.key) + '</div><div class="text-secondary small">' + (p.key) + '</div>';
+      li.appendChild(img); li.appendChild(wrap);
+
+      li.addEventListener('click', function(){ window.location.href = p.page; });
+      li.addEventListener('keydown', function(e){ if (e.key === 'Enter') window.location.href = p.page; });
+
+      resultsEl.appendChild(li);
+    });
+  }
+
+  function doSearch(q){
+    q = String(q||'').trim().toLowerCase();
+    if (!q) { clearResults(); return; }
+    const matches = products.filter(p => (p.title||p.key||'').toString().toLowerCase().indexOf(q) !== -1 || (p.key||'').toString().toLowerCase().indexOf(q) !== -1);
+    renderResults(matches);
+  }
+
+  input.addEventListener('input', function(e){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(()=> doSearch(input.value), 260);
+  });
+
+  // keyboard nav inside results
+  input.addEventListener('keydown', function(e){
+    const items = resultsEl.querySelectorAll('.search-result-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown'){
+      e.preventDefault(); activeIndex = Math.min(activeIndex+1, items.length-1); items[activeIndex].focus();
+    } else if (e.key === 'ArrowUp'){
+      e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); items[activeIndex].focus();
+    }
+  });
+
+  // close results when clicking outside
+  document.addEventListener('click', function(ev){
+    if (!ev.target.closest('.search-container')) clearResults();
   });
 });
 </script>
@@ -153,14 +243,31 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
-  // Confirm logout from header
+  // Header logout navigates to the logout confirmation page (no inline confirm)
+});
+</script>
+
+<script>
+// Intercept header logout link to show inline floating confirmation modal
+document.addEventListener('DOMContentLoaded', function(){
   try {
     var headerLogout = document.getElementById('headerLogout');
-    if (headerLogout) {
+    var overlay = document.getElementById('headerLogoutOverlay');
+    var overlayCancel = document.getElementById('headerLogoutCancel');
+    var logoutForm = document.getElementById('headerLogoutForm');
+    if (headerLogout && overlay) {
       headerLogout.addEventListener('click', function(e){
-        var ok = confirm('Are you sure you want to sign out from the site?');
-        if (!ok) { e.preventDefault(); e.stopPropagation(); }
+        // if JS enabled, prevent navigation and show inline overlay
+        e.preventDefault(); e.stopPropagation();
+        overlay.style.display = 'flex';
+        // focus cancel button for keyboard users
+        setTimeout(function(){ overlayCancel && overlayCancel.focus(); }, 80);
       });
+      overlayCancel && overlayCancel.addEventListener('click', function(){ overlay.style.display='none'; });
+      // allow Escape to close
+      document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape' && overlay.style.display === 'flex') { overlay.style.display='none'; } });
+      // clicking outside the modal panel should close overlay
+      overlay.addEventListener('click', function(ev){ if (ev.target === overlay) overlay.style.display='none'; });
     }
   } catch(e) {}
 });

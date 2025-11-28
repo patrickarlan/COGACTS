@@ -72,8 +72,12 @@ body.admin-page {
 }
 
 /* gradient backgrounds for the two panels */
-.panels-row .panel-active{ background: linear-gradient(135deg, #32d583 0%, #008d3d 100%); }
-.panels-row .panel-deactivate{ background: linear-gradient(135deg, #ff6b6b 0%, #aa0606 100%); }
+.panels-row .panel-active{ /* outline style when not selected */ background: transparent; border:1px solid rgba(0,0,0,0.06); color: #222; }
+.panels-row .panel-deactivate{ background: transparent; border:1px solid rgba(0,0,0,0.06); color: #222; }
+
+/* Selected state: filled gradients */
+.panels-row .panel-btn.selected.panel-active{ background: linear-gradient(135deg, #32d583 0%, #008d3d 100%); color: #fff; border: 0; }
+.panels-row .panel-btn.selected.panel-deactivate{ background: linear-gradient(135deg, #ff6b6b 0%, #aa0606 100%); color: #fff; border: 0; }
 
 /* Action buttons in the table: make Activate/Deactivate buttons use matching gradients */
 .toggle-status.btn-outline-success{

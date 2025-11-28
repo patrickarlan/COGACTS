@@ -246,7 +246,16 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   <h2 class="mb-3 visually-hidden">Admin — Users</h2>
   <?php if (!empty($err)): ?><div class="alert alert-danger"><?php echo esc($err); ?></div><?php endif; ?>
 
-  <h4>Existing users</h4>
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="me-auto">
+      <h4 class="m-0">Existing users</h4>
+    </div>
+    <div class="input-group" style="max-width:420px;">
+      <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+      <input id="adminSearchInput" type="search" class="form-control" placeholder="Search ID, username, email, name, contact..." aria-label="Search users">
+      <button id="adminSearchClear" class="btn btn-outline-secondary" type="button" title="Clear">✕</button>
+    </div>
+  </div>
   <div class="admin-table-wrap">
   <table class="table table-striped">
     <thead>
@@ -594,19 +603,90 @@ document.addEventListener('DOMContentLoaded', function(){
   </script>
 
   <script>
-  // Confirm full logout when clicking the admin logout button
-  document.addEventListener('DOMContentLoaded', function(){
-    var adminLogout = document.getElementById('adminLogoutBtn');
-    if (adminLogout) {
-      adminLogout.addEventListener('click', function(e){
-        // show a confirmation dialog — this triggers a full logout on server
-        var ok = confirm('Are you sure you want to sign out? This will log out the current session from the site.');
-        if (!ok) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+  // Admin table search: client-side filter over currently loaded rows (debounced)
+  function initAdminSearch(){
+    var input = document.getElementById('adminSearchInput');
+    var clearBtn = document.getElementById('adminSearchClear');
+    if (!input) return;
+    var timer = null;
+
+    function normalize(s){ return String(s||'').toLowerCase(); }
+
+    function doFilter(){
+      var q = normalize(input.value.trim());
+      var tbody = document.querySelector('.admin-table-wrap table tbody');
+      if (!tbody) return;
+      var rows = Array.from(tbody.querySelectorAll('tr'));
+      var matched = 0;
+      rows.forEach(function(r){
+        var text = normalize(r.textContent || '');
+        var idCell = r.querySelector('td');
+        if (idCell) text += ' ' + normalize(idCell.textContent || '');
+        var visible = true;
+        if (q) visible = text.indexOf(q) !== -1;
+        r.style.display = visible ? '' : 'none';
+        if (visible) matched++;
       });
+      // show a no-results row when nothing matches
+      var existing = tbody.querySelector('.no-results-row');
+      if (matched === 0) {
+        if (!existing) {
+          var nr = document.createElement('tr'); nr.className = 'no-results-row';
+          var c = document.createElement('td'); c.colSpan = tbody.closest('table').querySelectorAll('th').length; c.className='text-center text-muted';
+          c.textContent = 'No users match your search.';
+          nr.appendChild(c);
+          tbody.appendChild(nr);
+        }
+      } else {
+        if (existing) existing.remove();
+      }
     }
+
+    // attach handlers (avoid duplicate handlers by removing first)
+    input.removeEventListener('input', input._adminSearchHandler);
+    input._adminSearchHandler = function(){ clearTimeout(timer); timer = setTimeout(doFilter, 180); };
+    input.addEventListener('input', input._adminSearchHandler);
+
+    clearBtn && clearBtn.addEventListener('click', function(){ input.value = ''; input.dispatchEvent(new Event('input')); input.focus(); });
+  }
+
+  // initialize on first load
+  document.addEventListener('DOMContentLoaded', function(){ initAdminSearch(); });
+  </script>
+
+  <!-- Inline admin logout overlay (shows on current admin page) -->
+  <div id="adminLogoutOverlay" style="display:none;position:fixed;inset:0;z-index:16000;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;background:rgba(255,255,255,0.06);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);"></div>
+    <div role="dialog" aria-modal="true" aria-labelledby="adminLogoutTitle" style="position:relative;max-width:420px;width:92%;background:rgba(255,255,255,0.94);padding:18px;border-radius:10px;box-shadow:0 20px 60px rgba(2,6,23,0.18);">
+      <h3 id="adminLogoutTitle" style="margin:0 0 8px 0;font-size:1.05rem;color:#111">Sign out from the admin?</h3>
+      <p style="margin:0 0 14px 0;color:#444">This will sign out the current session from the site and return you to the login page.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button id="adminLogoutCancel" class="btn" type="button" style="padding:8px 12px;border-radius:6px;border:1px solid #d0d5dd;background:transparent;cursor:pointer">Cancel</button>
+        <form id="adminLogoutForm" method="post" action="admin_logout.php" style="display:inline;margin:0;padding:0;">
+          <button type="submit" class="btn primary" style="padding:8px 12px;border-radius:6px;border:1px solid #dc3545;background:#dc3545;color:#fff">Sign out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Intercept admin logout and show inline overlay
+  document.addEventListener('DOMContentLoaded', function(){
+    try {
+      var adminLogout = document.getElementById('adminLogoutBtn');
+      var overlay = document.getElementById('adminLogoutOverlay');
+      var cancel = document.getElementById('adminLogoutCancel');
+      if (adminLogout && overlay) {
+        adminLogout.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          overlay.style.display = 'flex';
+          setTimeout(function(){ cancel && cancel.focus(); }, 80);
+        });
+        cancel && cancel.addEventListener('click', function(){ overlay.style.display = 'none'; });
+        document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape' && overlay.style.display === 'flex') overlay.style.display = 'none'; });
+        overlay.addEventListener('click', function(ev){ if (ev.target === overlay) overlay.style.display = 'none'; });
+      }
+    } catch(e){}
   });
   </script>
 
@@ -719,6 +799,7 @@ document.addEventListener('DOMContentLoaded', function(){
           wrap.parentNode.replaceChild(newWrap, wrap);
           // re-run interactive bindings (toggle buttons etc.)
           if (typeof initRowActions === 'function') initRowActions();
+          if (typeof initAdminSearch === 'function') initAdminSearch();
           // If we preserved a width, only animate if new width is larger (avoid shrinking)
           if (panelsInner && preservedW != null) {
             if (newW && newW > preservedW) {
@@ -753,12 +834,39 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('.panels-row .panel-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         var panel = btn.getAttribute('data-panel');
-        // visual pressed feedback using class (does not affect layout)
+        var wasSelected = btn.classList.contains('selected');
+        // ensure only one selected at a time
+        document.querySelectorAll('.panels-row .panel-btn.selected').forEach(function(other){ if (other !== btn) { other.classList.remove('selected'); other.setAttribute('aria-pressed','false'); } });
+
+        // toggle selection on this button
+        if (wasSelected) {
+          btn.classList.remove('selected');
+          btn.setAttribute('aria-pressed','false');
+        } else {
+          btn.classList.add('selected');
+          btn.setAttribute('aria-pressed','true');
+        }
+
+        // visual pressed feedback and disable while loading
         btn.classList.add('pressed');
         btn.disabled = true;
-        reloadTablePartial(panel);
+
+        // If we were selected and now untoggled, clear the filter (reload all). Otherwise apply the chosen filter.
+        var filterToApply = wasSelected ? null : panel;
+        reloadTablePartial(filterToApply);
+
         setTimeout(function(){ btn.disabled = false; btn.classList.remove('pressed'); }, 800);
       });
     });
+
+    // Initialize panel selection from URL filter param (if present)
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var initFilter = params.get('filter');
+      if (initFilter) {
+        var startBtn = document.querySelector('.panels-row .panel-btn[data-panel="' + initFilter + '"]');
+        if (startBtn) { startBtn.classList.add('selected'); startBtn.setAttribute('aria-pressed','true'); }
+      }
+    } catch (e) {}
   });
   </script>

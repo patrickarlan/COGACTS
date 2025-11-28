@@ -229,7 +229,7 @@ if (!$conn->connect_error) {
     <h5 id="profileModalTitle">Update your profile info</h5>
     <p class="mb-3">You need to add your contact number and address before placing an order.</p>
     <div class="text-end">
-      <a href="editprofile.php" class="btn btn-primary me-2">Edit Profile</a>
+      <a href="BACKEND/editprofile.php" class="btn btn-primary me-2">Edit Profile</a>
       <button id="profileModalBack" class="btn btn-secondary">Back</button>
     </div>
   </div>

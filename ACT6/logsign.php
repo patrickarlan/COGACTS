@@ -177,10 +177,7 @@ window.addEventListener('pageshow', function(event){
                   <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" <?php echo isset($_COOKIE['remember_username']) ? 'checked' : ''; ?>>
                   <label class="form-check-label" for="rememberMe">Remember me</label>
               </div>
-              <div class="mb-3">
-                <input type="hidden" id="admin_login" name="admin_login" value="0">
-                <button type="button" id="adminToggle" class="btn btn-outline-primary w-100 mb-2 btn-sm" title="Toggle admin login">Admin login</button>
-              </div>
+              <div class="mb-3"></div>
               <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
                 <button type="button" class="btn-register btn btn-outline-primary w-100" onclick="window.location.href='register.php'">Register</button>
@@ -294,30 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
     input.parentElement.insertBefore(tooltip, input.nextSibling);
   }
   // Admin toggle button behavior
-  const adminToggle = document.getElementById('adminToggle');
-  const adminHidden = document.getElementById('admin_login');
-  if (adminToggle && adminHidden) {
-    adminToggle.addEventListener('click', function(){
-      const on = adminHidden.value === '1';
-      if (on) {
-        adminHidden.value = '0';
-        adminToggle.classList.remove('btn-primary');
-        adminToggle.classList.add('btn-outline-primary');
-      } else {
-        adminHidden.value = '1';
-        adminToggle.classList.remove('btn-outline-primary');
-        adminToggle.classList.add('btn-primary');
-      }
-    });
-    // Copy computed sizing from the Login button so toggling appearance doesn't change size
-    // enforce a small fixed height/padding so toggling doesn't change size
-    adminToggle.style.boxSizing = 'border-box';
-    adminToggle.style.padding = '.375rem .75rem';
-    adminToggle.style.fontSize = '.875rem';
-    adminToggle.style.lineHeight = '1.2';
-    adminToggle.style.height = '36px';
-    adminToggle.style.borderWidth = '1px';
-  }
+  // Admin toggle removed: admin-only login is no longer exposed on the login form.
 });
 </script>
 

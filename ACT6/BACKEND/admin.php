@@ -305,7 +305,7 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $btnLabel = $isDeactivated ? 'Activate' : 'Deactivate';
             $btnClass = $isDeactivated ? 'btn-outline-success' : 'btn-outline-warning';
           ?>
-          <button class="btn btn-sm <?php echo $btnClass; ?> toggle-status" data-user-id="<?php echo (int)$row['id']; ?>" data-action="<?php echo $isDeactivated ? 'activate' : 'deactivate'; ?>"><?php echo $btnLabel; ?></button>
+          <button class="btn btn-sm <?php echo $btnClass; ?> toggle-status" data-user-id="<?php echo (int)$row['id']; ?>" data-username="<?php echo esc($row['username']); ?>" data-action="<?php echo $isDeactivated ? 'activate' : 'deactivate'; ?>"><?php echo $btnLabel; ?></button>
         </td>
       </tr>
     <?php endwhile; ?>
@@ -393,6 +393,19 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 });
 </script>
+
+<!-- Action confirmation overlay (reused for Activate/Deactivate) -->
+<div id="actionConfirmOverlay" style="display:none;position:fixed;inset:0;z-index:17000;align-items:center;justify-content:center;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.22);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);"></div>
+  <div id="actionConfirmPanel" role="dialog" aria-modal="true" style="position:relative;max-width:520px;width:92%;background:linear-gradient(90deg,#0d6efd,#6610f2);color:#fff;padding:18px;border-radius:10px;box-shadow:0 20px 60px rgba(2,6,23,0.18);">
+    <h3 id="actionConfirmTitle" style="margin:0 0 8px 0;font-size:1.05rem;font-weight:600">Confirm action</h3>
+    <p id="actionConfirmBody" style="margin:0 0 14px 0;color:rgba(255,255,255,0.95)"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="actionConfirmCancel" class="btn" type="button" style="padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.12);color:#fff">Cancel</button>
+      <button id="actionConfirmOk" class="btn" type="button" style="padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.18);color:#fff">Confirm</button>
+    </div>
+  </div>
+</div>
 <?php endif; ?>
 
 <!-- Floating Create Modal -->
@@ -557,44 +570,112 @@ document.addEventListener('DOMContentLoaded', function(){
   // Initialize row actions (toggle status) so they can be re-attached after partial reloads
   function initRowActions(){
     var ADMIN_CSRF = '<?php echo esc($_SESSION['csrf_token']); ?>';
+    // pendingAction holds the button and details for the current confirmation
+    var pendingAction = null;
+
+    // ensure overlay elements exist (create on-demand if missing)
+    function ensureActionOverlay(){
+      var overlay = document.getElementById('actionConfirmOverlay');
+      if (overlay) return overlay;
+      // create overlay DOM
+      overlay = document.createElement('div'); overlay.id = 'actionConfirmOverlay';
+      overlay.style.display = 'none'; overlay.style.position = 'fixed'; overlay.style.inset = '0'; overlay.style.zIndex = '17000'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+      // backdrop
+      var backdrop = document.createElement('div'); backdrop.style.position='absolute'; backdrop.style.inset='0'; backdrop.style.background='rgba(0,0,0,0.22)'; backdrop.style.backdropFilter='blur(4px)'; backdrop.style.webkitBackdropFilter='blur(4px)';
+      // panel
+      var panel = document.createElement('div'); panel.id = 'actionConfirmPanel'; panel.setAttribute('role','dialog'); panel.style.position='relative'; panel.style.maxWidth='520px'; panel.style.width='92%'; panel.style.background='linear-gradient(90deg,#0d6efd,#6610f2)'; panel.style.color='#fff'; panel.style.padding='18px'; panel.style.borderRadius='10px'; panel.style.boxShadow='0 20px 60px rgba(2,6,23,0.18)';
+      var title = document.createElement('h3'); title.id = 'actionConfirmTitle'; title.style.margin='0 0 8px 0'; title.style.fontSize='1.05rem'; title.style.fontWeight='600'; title.textContent = 'Confirm action';
+      var body = document.createElement('p'); body.id = 'actionConfirmBody'; body.style.margin='0 0 14px 0'; body.style.color = 'rgba(255,255,255,0.95)';
+      var actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.justifyContent='flex-end';
+      var cancel = document.createElement('button'); cancel.id='actionConfirmCancel'; cancel.className='btn'; cancel.type='button'; cancel.style.padding='8px 12px'; cancel.style.borderRadius='6px'; cancel.style.border='1px solid rgba(255,255,255,0.22)'; cancel.style.background='rgba(255,255,255,0.12)'; cancel.style.color='#fff'; cancel.textContent='Cancel';
+      var ok = document.createElement('button'); ok.id='actionConfirmOk'; ok.className='btn'; ok.type='button'; ok.style.padding='8px 12px'; ok.style.borderRadius='6px'; ok.style.border='1px solid rgba(255,255,255,0.22)'; ok.style.background='rgba(255,255,255,0.18)'; ok.style.color='#fff'; ok.textContent='Confirm';
+      actions.appendChild(cancel); actions.appendChild(ok);
+      panel.appendChild(title); panel.appendChild(body); panel.appendChild(actions);
+      overlay.appendChild(backdrop); overlay.appendChild(panel);
+      document.body.appendChild(overlay);
+      // wire handlers
+      ok.addEventListener('click', performPendingAction);
+      cancel.addEventListener('click', function(){ overlay.style.display='none'; pendingAction = null; });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && overlay.style.display === 'flex') { overlay.style.display = 'none'; pendingAction = null; } });
+      overlay.addEventListener('click', function(e){ if (e.target === overlay) { overlay.style.display = 'none'; pendingAction = null; } });
+      return overlay;
+    }
+
+    // helper: show the confirmation overlay with message and store pending action
+    function showActionConfirm(message, btn, userId, action){
+      var overlay = ensureActionOverlay();
+      var title = document.getElementById('actionConfirmTitle');
+      var body = document.getElementById('actionConfirmBody');
+      title.textContent = (action === 'deactivate') ? 'Confirm Deactivate' : 'Confirm Activate';
+      body.textContent = message;
+      pendingAction = { button: btn, userId: userId, action: action };
+      overlay.style.display = 'flex';
+      var cancel = document.getElementById('actionConfirmCancel');
+      setTimeout(function(){ cancel && cancel.focus(); }, 60);
+      return false;
+    }
+
+    // perform the pending action (called when user confirms)
+    function performPendingAction(){
+      if (!pendingAction) return;
+      var button = pendingAction.button;
+      var userId = pendingAction.userId;
+      var action = pendingAction.action;
+      // hide overlay immediately
+      var overlay = document.getElementById('actionConfirmOverlay'); if (overlay) overlay.style.display = 'none';
+      if (!button || !userId || !action) return;
+      button.disabled = true;
+      fetch('toggle_user_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': ADMIN_CSRF },
+        body: JSON.stringify({ user_id: userId, action: action })
+      }).then(function(r){ return r.json(); }).then(function(json){
+        if (json && json.status === 'ok') {
+          var row = button.closest('tr');
+          var statusCell = row && row.querySelector('.user-status');
+          if (statusCell) statusCell.textContent = json.new_status;
+          if (action === 'deactivate') {
+            button.textContent = 'Activate';
+            button.setAttribute('data-action','activate');
+            button.classList.remove('btn-outline-warning');
+            button.classList.add('btn-outline-success');
+          } else {
+            button.textContent = 'Deactivate';
+            button.setAttribute('data-action','deactivate');
+            button.classList.remove('btn-outline-success');
+            button.classList.add('btn-outline-warning');
+          }
+        } else {
+          // show a simple alert fallback
+          alert('Action failed: ' + (json && json.message ? json.message : 'unknown'));
+        }
+      }).catch(function(){ alert('Network error'); })
+      .finally(function(){ if (button) button.disabled = false; pendingAction = null; });
+    }
+
+    // wire confirm overlay buttons
+    (function wireConfirmOverlay(){
+      var overlay = document.getElementById('actionConfirmOverlay');
+      if (!overlay) return;
+      var ok = document.getElementById('actionConfirmOk');
+      var cancel = document.getElementById('actionConfirmCancel');
+      if (ok) ok.addEventListener('click', performPendingAction);
+      if (cancel) cancel.addEventListener('click', function(){ overlay.style.display = 'none'; pendingAction = null; });
+      // Escape and click outside
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && overlay.style.display === 'flex') { overlay.style.display = 'none'; pendingAction = null; } });
+      overlay.addEventListener('click', function(e){ if (e.target === overlay) { overlay.style.display = 'none'; pendingAction = null; } });
+    })();
+
     document.querySelectorAll('.toggle-status').forEach(function(btn){
-      // attach a fresh handler (elements will be new after replacement)
       btn.addEventListener('click', function(){
         var userId = this.getAttribute('data-user-id');
         var action = this.getAttribute('data-action');
+        var username = this.getAttribute('data-username') || '';
         if (!userId || !action) return;
-        if (!confirm((action==='deactivate' ? 'Deactivate' : 'Activate') + ' user #' + userId + '?')) return;
-        var button = this;
-        button.disabled = true;
-        fetch('toggle_user_status.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': ADMIN_CSRF
-          },
-          body: JSON.stringify({ user_id: userId, action: action })
-        }).then(function(r){ return r.json(); }).then(function(json){
-          if (json && json.status === 'ok') {
-            var row = button.closest('tr');
-            var statusCell = row && row.querySelector('.user-status');
-            if (statusCell) statusCell.textContent = json.new_status;
-            if (action === 'deactivate') {
-              button.textContent = 'Activate';
-              button.setAttribute('data-action','activate');
-              button.classList.remove('btn-outline-warning');
-              button.classList.add('btn-outline-success');
-            } else {
-              button.textContent = 'Deactivate';
-              button.setAttribute('data-action','deactivate');
-              button.classList.remove('btn-outline-success');
-              button.classList.add('btn-outline-warning');
-            }
-          } else {
-            alert('Action failed: ' + (json && json.message ? json.message : 'unknown'));
-          }
-        }).catch(function(){
-          alert('Network error');
-        }).finally(function(){ button.disabled = false; });
+        // show floating confirmation (blue background) instead of native confirm
+        var label = (action === 'deactivate') ? 'Deactivate' : 'Activate';
+        var message = label + ' user #' + userId + (username ? (' ("' + username + '")') : '') + '?';
+        showActionConfirm(message, this, userId, action);
       });
     });
   }

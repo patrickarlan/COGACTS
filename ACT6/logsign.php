@@ -48,53 +48,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       // If not protected admin, check DB user
       if (!$loggedIn) {
-        $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
+        // Build a safe SELECT list depending on which columns actually exist.
+        $selectCols = ['id','username','password'];
+        $colCheck = $conn->query("SHOW COLUMNS FROM users LIKE 'status'");
+        if ($colCheck && $colCheck->num_rows > 0) $selectCols[] = 'status';
+        $colCheck2 = $conn->query("SHOW COLUMNS FROM users LIKE 'admin_password_changed_at'");
+        if ($colCheck2 && $colCheck2->num_rows > 0) $selectCols[] = 'admin_password_changed_at';
+        $sql = 'SELECT ' . implode(', ', $selectCols) . ' FROM users WHERE username=?';
+        $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
 
-        if ($row && password_verify($password, $row['password'])) {
-          $_SESSION['user_id'] = $row['id'];
-          $_SESSION['username'] = $row['username'];
-          // If the users table has a 'role' column, fetch and set it in session
-          $role = null;
-          $colRes = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
-          $hasRoleCol = ($colRes && $colRes->num_rows > 0);
-          if ($hasRoleCol) {
-            // fetch role for this user
-            $rstmt = $conn->prepare('SELECT role FROM users WHERE id=?');
-            $rstmt->bind_param('i', $row['id']);
-            $rstmt->execute();
-            $rres = $rstmt->get_result();
-            if ($rrow = $rres->fetch_assoc()) {
-              $role = $rrow['role'];
-              // normalize and store role as lowercase string
-              $_SESSION['role'] = is_string($role) ? strtolower(trim($role)) : $role;
-              if (is_string($role) && strtolower(trim($role)) === 'admin') {
-                $_SESSION['is_admin'] = 1;
-                $isAdminLogin = true;
-              } else {
-                // If admin-only login requested but this DB user is not admin, reject
-                if ($adminRequested) {
-                  // clear any partial session variables set above
-                  unset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['role']);
-                  // generic error message to avoid revealing account existence
-                  $message = 'Username or Password is incorrect';
-                  $loggedIn = false;
+        if (!$row) {
+          // Username not found in DB — show explicit floating message
+          $floating_alert = 'Account doesn\'t exist';
+          $message = '';
+          $loggedIn = false;
+        } 
+        if ($row) {
+          $acctStatus = isset($row['status']) ? $row['status'] : null;
+          $adminChangedAt = isset($row['admin_password_changed_at']) ? $row['admin_password_changed_at'] : null;
+          if ($acctStatus === 'deactivated') {
+            // Do not reveal account existence; show a generic floating alert instead
+            $floating_alert = 'Account has been deactivated. Contact support for assistance.';
+            // ensure inline message is empty so the floating modal is used
+            $message = '';
+            $loggedIn = false;
+          } elseif (password_verify($password, $row['password'])) {
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['username'] = $row['username'];
+            // If admin changed the password for this user previously, surface a transient info message
+            if ($adminChangedAt) {
+              $info_flash = 'Your password was changed by an administrator on ' . date('M j, Y H:i', strtotime($adminChangedAt)) . '. Please use the new password or reset it if you do not know it.';
+              $_SESSION['info_flash'] = $info_flash;
+            }
+            // If the users table has a 'role' column, fetch and set it in session
+            $role = null;
+            $colRes = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
+            $hasRoleCol = ($colRes && $colRes->num_rows > 0);
+            if ($hasRoleCol) {
+              // fetch role for this user
+              $rstmt = $conn->prepare('SELECT role FROM users WHERE id=?');
+              $rstmt->bind_param('i', $row['id']);
+              $rstmt->execute();
+              $rres = $rstmt->get_result();
+              if ($rrow = $rres->fetch_assoc()) {
+                $role = $rrow['role'];
+                // normalize and store role as lowercase string
+                $_SESSION['role'] = is_string($role) ? strtolower(trim($role)) : $role;
+                if (is_string($role) && strtolower(trim($role)) === 'admin') {
+                  $_SESSION['is_admin'] = 1;
+                  $isAdminLogin = true;
+                } else {
+                  // If admin-only login requested but this DB user is not admin, reject
+                  if ($adminRequested) {
+                    // clear any partial session variables set above
+                    unset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['role']);
+                    // generic error message to avoid revealing account existence
+                    $message = 'Username or Password is incorrect';
+                    $loggedIn = false;
+                  }
                 }
               }
             }
+            // If adminRequested and role column not present, only allow protected admin config
+            if ($adminRequested && !$hasRoleCol) {
+              // role column missing, so DB users cannot be considered admin -> reject
+              unset($_SESSION['user_id'], $_SESSION['username']);
+              // generic error message
+              $message = 'Username or Password is incorrect';
+              $loggedIn = false;
+            }
+            $loggedIn = true;
           }
-          // If adminRequested and role column not present, only allow protected admin config
-          if ($adminRequested && !$hasRoleCol) {
-            // role column missing, so DB users cannot be considered admin -> reject
-            unset($_SESSION['user_id'], $_SESSION['username']);
-            // generic error message
-            $message = 'Username or Password is incorrect';
-            $loggedIn = false;
-          }
-          $loggedIn = true;
         }
       }
 
@@ -117,7 +145,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     exit();
       } else {
-        $message = "Username or Password is incorrect";
+        // If we set a floating alert (e.g. deactivated account -> 'Account not found'), prefer that
+        if (!empty($floating_alert)) {
+          // leave $message empty so the floating modal is shown instead of the inline danger alert
+          $message = '';
+        } else {
+          $message = "Username or Password is incorrect";
+        }
       }
     } else {
       $message = "All fields are required.";
@@ -196,6 +230,34 @@ window.addEventListener('pageshow', function(event){
         </div>
       <?php endif; ?>
 
+      <?php if (!empty($_SESSION['info_flash'])): ?>
+        <div class="alert-container mt-3">
+          <div class="alert alert-info text-center"><?php echo htmlspecialchars($_SESSION['info_flash']); ?></div>
+        </div>
+        <?php unset($_SESSION['info_flash']); ?>
+      <?php endif; ?>
+
+      <?php if (!empty($floating_alert)): ?>
+        <div id="loginFloatingAlert" style="position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.28);"></div>
+          <div role="dialog" aria-modal="true" style="position:relative;max-width:520px;width:92%;background:#fff;padding:18px;border-radius:10px;box-shadow:0 20px 60px rgba(2,6,23,0.18);">
+            <h5 style="margin:0 0 8px 0;">Notice</h5>
+            <div class="mb-2 text-muted small">Login</div>
+            <p style="margin:0 0 14px 0;color:#222"><?php echo htmlspecialchars($floating_alert); ?></p>
+            <div style="text-align:right"><button id="dismissLoginFloating" class="btn btn-primary">OK</button></div>
+          </div>
+        </div>
+        <script>
+          document.addEventListener('DOMContentLoaded', function(){
+            var ov = document.getElementById('loginFloatingAlert');
+            if (ov) {
+              setTimeout(function(){ try{ document.getElementById('dismissLoginFloating').focus(); }catch(e){} },60);
+              document.getElementById('dismissLoginFloating').addEventListener('click', function(){ ov.remove(); });
+            }
+          });
+        </script>
+      <?php endif; ?>
+
     </div> 
 </section>
 
@@ -222,19 +284,21 @@ crossorigin="anonymous"></script>
 document.addEventListener('DOMContentLoaded', function () {
   // Scroll-to-top button logic
   const btn = document.getElementById('scrollTopBtn');
-  if (btn) {
-    function checkButtonVisibility() {
-      const doc = document.documentElement;
-      const scrollTop = window.scrollY || window.pageYOffset;
-      const maxScroll = doc.scrollHeight - window.innerHeight;
-      if (maxScroll <= 0) {
-        btn.classList.remove('visible');
-        return;
-      }
-      const threshold = maxScroll * 0.5;
-      if (scrollTop > threshold) {
-        btn.classList.add('visible');
-      } else {
+        if ($row) {
+          $acctStatus = array_key_exists('status', $row) ? $row['status'] : null;
+          $adminChangedAt = array_key_exists('admin_password_changed_at', $row) ? $row['admin_password_changed_at'] : null;
+          if ($acctStatus === 'deactivated') {
+            // For deactivated accounts, avoid revealing existence — show a generic 'not found' floating message
+            $floating_alert = 'Account not found';
+            $loggedIn = false;
+          } elseif (password_verify($password, $row['password'])) {
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['username'] = $row['username'];
+            // If admin changed the password for this user previously, surface a transient info message
+            if ($adminChangedAt) {
+              $info_flash = 'Your password was changed by an administrator on ' . date('M j, Y H:i', strtotime($adminChangedAt)) . '. Please use the new password or reset it if you do not know it.';
+              $_SESSION['info_flash'] = $info_flash;
+            }
         btn.classList.remove('visible');
       }
     }

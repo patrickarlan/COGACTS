@@ -200,6 +200,18 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (!$stmt->execute()) $err = $stmt->error;
     else {
+      // If password was updated by admin, record timestamp so the user can be notified
+      if (!empty($passwordProvided)) {
+        // Attempt to add column if it doesn't exist (ignore errors)
+        try { $mysqli->query("ALTER TABLE users ADD COLUMN admin_password_changed_at DATETIME NULL"); } catch (Exception $e) {}
+        // Update the user's record to indicate admin password change time
+        try {
+          $u2 = $mysqli->prepare('UPDATE users SET admin_password_changed_at = NOW() WHERE id=?');
+          $u2->bind_param('i', $id);
+          $u2->execute();
+          $u2->close();
+        } catch (Exception $e) {}
+      }
       // If admin changed the password, set a flash message to show a floating notice
       if (!empty($passwordProvided)) {
         $_SESSION['admin_flash'] = [
@@ -254,10 +266,10 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="panels-row" aria-hidden="true">
       <div class="panels-inner" aria-hidden="true">
         <button type="button" class="panel-active panel-btn" data-panel="active" aria-label="Refresh active users">
-          <span class="panel-label">Active Users</span>
+          <span class="panel-label">Activated Users</span>
         </button>
-        <button type="button" class="panel-deactivate panel-btn" data-panel="deactivated" aria-label="Refresh deactivated users">
-          <span class="panel-label">Deactivated Users</span>
+        <button type="button" class="panel-deactivate panel-btn" data-panel="deactivated" aria-label="Refresh deleted users">
+          <span class="panel-label">Deleted Users</span>
         </button>
       </div>
     </div>
@@ -319,7 +331,8 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($roleColumnExists): ?><td><?php echo esc($row['role'] ?? ''); ?></td><?php endif; ?>
         <td class="admin-actions-col">
           <button type="button" class="btn btn-sm btn-outline-info btn-details" data-user-id="<?php echo (int)$row['id']; ?>" data-username="<?php echo esc($row['username']); ?>">Details</button>
-          <a class="btn btn-sm btn-outline-primary" href="admin.php?action=edit&id=<?php echo (int)$row['id']; ?>">Edit</a>
+          <?php $editHref = 'admin.php?action=edit&id=' . (int)$row['id']; if (!empty($filter)) $editHref .= '&filter=' . urlencode($filter); ?>
+          <a class="btn btn-sm btn-outline-primary" href="<?php echo $editHref; ?>">Edit</a>
           <?php
             $isDeactivated = (($row['status'] ?? '') === 'deactivated');
             $btnLabel = $isDeactivated ? 'Activate' : 'Deactivate';
@@ -647,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var overlay = ensureActionOverlay();
       var title = document.getElementById('actionConfirmTitle');
       var body = document.getElementById('actionConfirmBody');
-      title.textContent = (action === 'deactivate') ? 'Confirm Deactivate' : 'Confirm Activate';
+      title.textContent = (action === 'deactivate') ? 'Confirm Delete' : 'Confirm Activate';
       body.textContent = message;
       pendingAction = { button: btn, userId: userId, action: action };
       overlay.style.display = 'flex';
@@ -714,7 +727,7 @@ document.addEventListener('DOMContentLoaded', function(){
         var username = this.getAttribute('data-username') || '';
         if (!userId || !action) return;
         // show floating confirmation (blue background) instead of native confirm
-        var label = (action === 'deactivate') ? 'Deactivate' : 'Activate';
+        var label = (action === 'deactivate') ? 'Delete' : 'Activate';
         var message = label + ' user #' + userId + (username ? (' ("' + username + '")') : '') + '?';
         showActionConfirm(message, this, userId, action);
       });
@@ -958,16 +971,41 @@ document.addEventListener('DOMContentLoaded', function(){
       var table = document.querySelector('.admin-table-wrap .table');
       var panelsInner = document.querySelector('.panels-row .panels-inner');
       if (!table || !panelsInner) return;
-      // use the table's scrollWidth (full content width) so panels match the table including overflow
-      var w = table.scrollWidth || table.offsetWidth || table.clientWidth;
+      // use the table's visible width so panels match the table's rendered size
+      var rect = table.getBoundingClientRect && table.getBoundingClientRect();
+      var w = (rect && rect.width) ? Math.round(rect.width) : (table.offsetWidth || table.clientWidth || table.scrollWidth);
       // apply width to panelsInner (and limit max-width) so the two panels align under the table
       panelsInner.style.width = w + 'px';
       panelsInner.style.maxWidth = w + 'px';
     }
-    var resizeTimer = null;
+      var resizeTimer = null;
     window.addEventListener('resize', function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(syncPanels, 120); });
+    // restore preserved width when navigating back from edit (stored in sessionStorage)
+    function restorePreservedPanelsWidth(){
+      try {
+        var panelsInner = document.querySelector('.panels-row .panels-inner');
+        if (!panelsInner) return;
+        var stored = sessionStorage.getItem('admin_panels_width');
+        if (stored) {
+          // apply without transition to avoid jump animation
+          panelsInner.style.transition = '';
+          panelsInner.style.width = stored + 'px';
+          panelsInner.style.maxWidth = stored + 'px';
+          sessionStorage.removeItem('admin_panels_width');
+          return true;
+        }
+      } catch (e){}
+      return false;
+    }
+
     // run on DOMContentLoaded and a short timeout to catch late layout changes
-    document.addEventListener('DOMContentLoaded', function(){ syncPanels(); setTimeout(syncPanels, 200); setTimeout(syncPanels, 800); });
+    document.addEventListener('DOMContentLoaded', function(){
+      // if we restored a preserved width, avoid immediately overwriting it
+      var restored = restorePreservedPanelsWidth();
+      if (!restored) {
+        syncPanels(); setTimeout(syncPanels, 200); setTimeout(syncPanels, 800);
+      }
+    });
   })();
   </script>
 
@@ -1003,9 +1041,10 @@ document.addEventListener('DOMContentLoaded', function(){
         var doc = parser.parseFromString(html, 'text/html');
         var newWrap = doc.querySelector('.admin-table-wrap');
         if (newWrap) {
-          // compute new table width so we can decide whether to animate panels
+          // compute new table visible width so we can decide whether to animate panels
           var newTable = newWrap.querySelector('.table');
-          var newW = (newTable && newTable.scrollWidth) ? newTable.scrollWidth : null;
+          var newRect = newTable && newTable.getBoundingClientRect && newTable.getBoundingClientRect();
+          var newW = (newRect && newRect.width) ? Math.round(newRect.width) : (newTable ? (newTable.offsetWidth || newTable.clientWidth || newTable.scrollWidth) : null);
           wrap.parentNode.replaceChild(newWrap, wrap);
           // re-run interactive bindings (toggle buttons etc.)
           if (typeof initRowActions === 'function') initRowActions();
@@ -1067,6 +1106,20 @@ document.addEventListener('DOMContentLoaded', function(){
 
         setTimeout(function(){ btn.disabled = false; btn.classList.remove('pressed'); }, 800);
       });
+    });
+
+    // Preserve panels width when navigating to Edit (so size doesn't jump)
+    document.addEventListener('DOMContentLoaded', function(){
+      try {
+        document.querySelectorAll('a[href*="admin.php?action=edit"]').forEach(function(link){
+          link.addEventListener('click', function(){
+            try {
+              var p = document.querySelector('.panels-row .panels-inner');
+              if (p && p.clientWidth) sessionStorage.setItem('admin_panels_width', p.clientWidth);
+            } catch (e) {}
+          });
+        });
+      } catch (e) {}
     });
 
     // Initialize panel selection from URL filter param (if present)

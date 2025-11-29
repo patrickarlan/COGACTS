@@ -19,6 +19,25 @@
         .postal-id-col, th.postal-id-col { min-width: 120px; }
         .admin-actions-col, th.admin-actions-col { min-width: 160px; }
       }
+      /* User details modal styling */
+      #userDetailsOverlay { display: none; }
+      #userDetailsClose { cursor: pointer; transition: transform .12s ease, background-color .12s ease; }
+      #userDetailsClose:hover { background-color: #f2f4f6; transform: translateY(-2px); }
+      .order-status { margin-left:8px; padding:2px 8px; border-radius:8px; font-size:0.85em; display:inline-flex; align-items:center; gap:6px; }
+      .order-status .bi { font-size:1rem; line-height:1; }
+      .order-status.pending { background: #fff4e5; color: #d97706; font-weight:600; }
+      .order-status.cancelled { background: #ffecec; color: #b91c1c; font-weight:600; }
+      .order-status.completed { background: #e6ffed; color: #0f5132; font-weight:600; }
+      .order-status.processing { background: #e7f0ff; color: #0b5cff; font-weight:600; }
+      .order-status.unknown { background: #f3f4f6; color: #374151; font-weight:600; }
+      /* list layout for details: left = title+qty (truncated), right = status badge */
+      .user-details-list ul { list-style: none; margin: 0; padding: 0; }
+      .user-details-list li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 4px; border-bottom:1px solid rgba(0,0,0,0.04); }
+      .user-details-list li:last-child { border-bottom: none; }
+      .user-details-left { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+      .user-details-left .title { display:block; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+      .user-details-left .meta { display:inline-block; margin-left:8px; color:#555; font-size:0.95em; }
+      .user-details-right { flex-shrink:0; margin-left:8px; }
     </style>
     <script>
     // BFCache / back button protection: if page is restored from cache, redirect to login
@@ -287,7 +306,7 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
       $res = $mysqli->query('SELECT ' . $cols . ' FROM users ' . $where . ' ORDER BY id DESC LIMIT 200');
       while ($row = $res->fetch_assoc()):
     ?>
-      <tr>
+      <tr data-user-id="<?php echo (int)$row['id']; ?>" data-username="<?php echo esc($row['username']); ?>">
         <td><?php echo (int)$row['id']; ?></td>
         <td><?php echo esc($row['username']); ?></td>
         <td><?php echo esc($row['email']); ?></td>
@@ -299,6 +318,7 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <td class="user-status"><?php echo esc($row['status'] ?? 'active'); ?></td>
         <?php if ($roleColumnExists): ?><td><?php echo esc($row['role'] ?? ''); ?></td><?php endif; ?>
         <td class="admin-actions-col">
+          <button type="button" class="btn btn-sm btn-outline-info btn-details" data-user-id="<?php echo (int)$row['id']; ?>" data-username="<?php echo esc($row['username']); ?>">Details</button>
           <a class="btn btn-sm btn-outline-primary" href="admin.php?action=edit&id=<?php echo (int)$row['id']; ?>">Edit</a>
           <?php
             $isDeactivated = (($row['status'] ?? '') === 'deactivated');
@@ -406,7 +426,28 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
 </div>
-<?php endif; ?>
+  <?php endif; ?>
+
+  <!-- User details overlay (shows favourites and orders) -->
+  <div id="userDetailsOverlay" style="display:none;position:fixed;inset:0;z-index:18000;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);"></div>
+    <div id="userDetailsPanel" role="dialog" aria-modal="true" style="position:relative;max-width:1100px;width:96%;background:#fff;padding:16px;border-radius:10px;box-shadow:0 20px 60px rgba(2,6,23,0.18);color:#111;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <h5 id="userDetailsTitle" style="margin:0;font-size:1rem;">User details</h5>
+        <button id="userDetailsClose" class="btn btn-sm btn-light">Close</button>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1 1 45%;min-width:260px;">
+          <div style="font-weight:600;margin-bottom:6px">Favourites</div>
+          <div id="userFavs" class="user-details-list" style="min-height:60px;color:#222;padding:8px;border:1px solid #eee;border-radius:6px;background:#fafafa"></div>
+        </div>
+        <div style="flex:1 1 45%;min-width:260px;">
+          <div style="font-weight:600;margin-bottom:6px">Orders</div>
+          <div id="userOrders" class="user-details-list" style="min-height:60px;color:#222;padding:8px;border:1px solid #eee;border-radius:6px;background:#fafafa"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- Floating Create Modal -->
 <div id="createOverlay" class="modal-overlay" aria-hidden="true">
@@ -678,6 +719,94 @@ document.addEventListener('DOMContentLoaded', function(){
         showActionConfirm(message, this, userId, action);
       });
     });
+
+    // Details button: show user favourites and orders in an overlay
+    document.querySelectorAll('.btn-details').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var userId = this.getAttribute('data-user-id');
+        var username = this.getAttribute('data-username') || '';
+        if (!userId) return;
+        showUserDetails(userId, username);
+      });
+    });
+
+    function ensureDetailsOverlay(){
+      var ov = document.getElementById('userDetailsOverlay');
+      return ov;
+    }
+
+    function renderListSimple(container, items, isOrder){
+      if (!container) return;
+      if (!items || items.length === 0) { container.innerHTML = '<div class="text-muted">No items</div>'; return; }
+      var ul = document.createElement('ul'); ul.style.margin = 0; ul.style.paddingLeft = '18px';
+      items.forEach(function(it){
+        var li = document.createElement('li');
+        // left container: title + qty
+        var left = document.createElement('div'); left.className = 'user-details-left';
+        var titleSpan = document.createElement('span'); titleSpan.className = 'title'; titleSpan.textContent = it.product_title || it.product_key || ('#' + (it.id || 'unknown'));
+        left.appendChild(titleSpan);
+        if (isOrder && it.qty != null) {
+          var meta = document.createElement('span'); meta.className = 'meta'; meta.textContent = 'qty: ' + it.qty;
+          left.appendChild(meta);
+        }
+
+        // right container: status badge (only for orders)
+        var right = document.createElement('div'); right.className = 'user-details-right';
+        if (isOrder && it.status) {
+          var s = String(it.status || '').toLowerCase();
+          var span = document.createElement('span');
+          var mapped = 'unknown';
+          var iconClass = 'bi-info-circle-fill';
+          if (s === 'pending' || s === 'pending_payment') { mapped = 'pending'; iconClass = 'bi-clock-fill'; }
+          else if (s === 'cancelled' || s === 'canceled') { mapped = 'cancelled'; iconClass = 'bi-x-circle-fill'; }
+          else if (s === 'completed' || s === 'paid' || s === 'fulfilled') { mapped = 'completed'; iconClass = 'bi-check-circle-fill'; }
+          else if (s === 'processing' || s === 'processing_payment') { mapped = 'processing'; iconClass = 'bi-hourglass-split'; }
+          span.className = 'order-status ' + mapped;
+          var icon = document.createElement('i'); icon.className = 'bi ' + iconClass; icon.setAttribute('aria-hidden','true');
+          var label = document.createElement('span'); label.textContent = String(it.status || ''); label.setAttribute('aria-hidden','true');
+          span.appendChild(icon); span.appendChild(label);
+          span.title = String(it.status || '');
+          right.appendChild(span);
+        }
+
+        // assemble
+        li.appendChild(left);
+        li.appendChild(right);
+        ul.appendChild(li);
+      });
+      container.innerHTML = ''; container.appendChild(ul);
+    }
+
+    function showUserDetails(userId, username){
+      var ov = ensureDetailsOverlay();
+      if (!ov) return alert('Details overlay not found');
+      var favs = document.getElementById('userFavs');
+      var orders = document.getElementById('userOrders');
+      var title = document.getElementById('userDetailsTitle');
+      if (title) title.textContent = 'User: ' + (username || userId) + ' — Details';
+      if (favs) favs.textContent = 'Loading…';
+      if (orders) orders.textContent = 'Loading…';
+      ov.style.display = 'flex';
+      var closeBtn = document.getElementById('userDetailsClose'); if (closeBtn) setTimeout(function(){ closeBtn.focus(); },60);
+      fetch('user_items.php?user_id=' + encodeURIComponent(userId), { credentials: 'same-origin' })
+        .then(function(r){ return r.json(); })
+        .then(function(json){
+          if (!json || json.status === 'error'){
+            if (favs) favs.innerHTML = '<div class="text-danger">Failed to load favourites</div>';
+            if (orders) orders.innerHTML = '<div class="text-danger">Failed to load orders</div>';
+            return;
+          }
+          // show user's first name in the title when present
+          if (json.user && json.user.first_name) {
+            var titleEl = document.getElementById('userDetailsTitle'); if (titleEl) titleEl.textContent = 'User: ' + json.user.first_name + (json.user.last_name ? (' ' + json.user.last_name) : '');
+          }
+          renderListSimple(favs, json.favourites || [], false);
+          renderListSimple(orders, json.orders || [], true);
+        }).catch(function(){ if (favs) favs.innerHTML = '<div class="text-danger">Failed to load favourites</div>'; if (orders) orders.innerHTML = '<div class="text-danger">Failed to load orders</div>'; });
+      // wire close
+      var closeEl = document.getElementById('userDetailsClose'); if (closeEl) closeEl.onclick = function(){ ov.style.display = 'none'; };
+    }
   }
   // run once on initial load
   document.addEventListener('DOMContentLoaded', function(){ initRowActions(); });
